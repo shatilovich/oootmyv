@@ -30,7 +30,7 @@
   color-scheme:dark;
 }
 *,*::before,*::after{box-sizing:border-box}
-html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+html{scroll-padding-top:calc(76px + env(safe-area-inset-top,0px));-webkit-text-size-adjust:100%}
 html,body{margin:0}
 body{background:var(--ground);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
 img,svg{max-width:100%}
@@ -100,7 +100,8 @@ section.block{padding-top:32px}
 .hero-head{grid-area:head}
 .hero-sheet{grid-area:sheet;padding:0 2px}
 .hero-upload{grid-area:upload;display:flex;flex-direction:column;gap:10px}
-.hero-upload:has(#file:focus-visible) label.btn{outline:2px solid var(--ink);outline-offset:3px}
+.hero-upload:has(#file:focus-visible) label.btn,.band:has(#file2:focus-visible) label.btn{outline:2px solid var(--ink);outline-offset:3px}
+.band:has(#file2:focus-visible) label.btn{outline-color:var(--btn-fg)}
 .doc{position:relative;padding:20px 20px 62px;background:var(--sheet);border-radius:3px;transform:rotate(-1deg);box-shadow:0 1px 0 var(--line),0 18px 30px -18px var(--shadow)}
 .doc-kicker{font-size:12px;color:var(--muted)}
 .doc-no{font-family:Spectral,Georgia,serif;font-size:17px;font-weight:600;margin-top:4px;overflow-wrap:anywhere}
@@ -119,6 +120,7 @@ section.block{padding-top:32px}
 .land-sec{padding-top:56px}
 .land-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
 footer.site{margin-top:64px;padding:32px 20px calc(120px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
+@media (min-width:900px){footer.site{padding:40px 40px 64px}}
 footer.site .inner{max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 24px;align-items:center}
 footer.site a,footer.site button{font-size:14px}
 
@@ -162,6 +164,7 @@ footer.site a,footer.site button{font-size:14px}
 /* docs */
 .doc-row{display:flex;align-items:center;gap:12px;min-height:60px;border-bottom:1px solid var(--line-soft)}
 .doc-row:last-of-type{border-bottom:0}
+.doc-row>.muted{display:flex;flex-shrink:0}
 .doc-row .name{flex-grow:1;font-size:15px;overflow-wrap:anywhere}
 .icon-btn{display:grid;place-items:center;width:44px;height:44px;flex-shrink:0;border:0;border-radius:6px;background:none;color:var(--ink);cursor:pointer}
 .icon-btn:hover{background:var(--line-soft)}
@@ -175,6 +178,7 @@ footer.site a,footer.site button{font-size:14px}
 .case .st.hot{color:var(--accent-deep)}
 .case .art{margin-top:6px;font-size:16px;font-weight:600}
 .case .sub{margin-top:2px;font-size:14px;color:var(--muted)}
+.case.stamped{padding-right:140px}
 .case .act{margin-top:8px;font-size:14px;font-weight:600;color:var(--accent)}
 .stamp{position:absolute;right:16px;top:22px;padding:4px 10px;border:2px solid var(--accent);border-radius:4px;color:var(--accent);font-family:Spectral,Georgia,serif;font-weight:700;font-size:15px;letter-spacing:.08em;transform:rotate(-7deg)}
 .events{margin:0;padding:0;list-style:none}
@@ -201,8 +205,8 @@ main.has-tabs{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
 .cookie p{flex-grow:1;font-size:14px;line-height:1.4}
 .cookie a{color:inherit}
 .cookie button{flex-shrink:0;height:44px;padding:0 16px;border:0;border-radius:6px;background:var(--btn-fg);color:var(--btn-bg);font:600 15px system-ui,-apple-system,sans-serif;cursor:pointer}
-.toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));z-index:60;transform:translate(-50%,-140%);max-width:calc(100% - 32px);padding:12px 16px;background:var(--btn-bg);color:var(--btn-fg);border-radius:8px;font-size:15px;transition:transform .25s ease;pointer-events:none}
-.toast.show{transform:translate(-50%,0)}
+.toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));z-index:60;transform:translate(-50%,calc(-100% - 40px));visibility:hidden;max-width:calc(100% - 32px);padding:12px 16px;background:var(--btn-bg);color:var(--btn-fg);border-radius:8px;font-size:15px;transition:transform .25s ease,visibility .25s;pointer-events:none}
+.toast.show{transform:translate(-50%,0);visibility:visible}
 dialog{width:calc(100% - 24px);max-width:520px;padding:0;border:0;border-radius:12px;background:var(--ground);color:var(--ink)}
 dialog::backdrop{background:var(--backdrop)}
 .dlg{padding:24px 20px 20px;display:flex;flex-direction:column;gap:14px}
@@ -215,12 +219,85 @@ dialog::backdrop{background:var(--backdrop)}
 .demo-box .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .demo-box .btns .btn{width:auto;flex:1 1 150px}
 
+/* desktop helpers & new blocks */
+.wide{max-width:1120px;margin:0 auto;padding:0 20px}
+.split{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"side" "main"}
+.split.main-first{grid-template-areas:"main" "side"}
+.col-main{grid-area:main;min-width:0}
+.col-side{grid-area:side;min-width:0}
+.hdr-l{display:flex;align-items:center;gap:24px;min-width:0}
+.hdr-r{display:flex;align-items:center;gap:4px}
+.side-card{margin-top:16px;padding:20px;background:var(--sheet);border-radius:6px;display:flex;flex-direction:column;gap:10px}
+.side-card .h3{margin:0}
+.trust{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:14px;color:var(--muted)}
+.trust li{display:flex;gap:8px;align-items:flex-start}
+.trust svg{flex-shrink:0;margin-top:2px;color:var(--ink)}
+.pack{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.pack-item{display:flex;gap:12px;padding:16px;background:var(--sheet);border-radius:6px}
+.pack-item svg{flex-shrink:0;color:var(--accent)}
+.pack-item b{display:block;font-size:16px}
+.pack-item span{display:block;margin-top:4px;font-size:14px;color:var(--muted)}
+.facts{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.fact{padding:18px;border:1.5px solid var(--line);border-radius:6px}
+.fact .v{font-family:Spectral,Georgia,serif;font-size:34px;font-weight:600;line-height:1}
+.fact p{margin-top:8px;font-size:15px;color:var(--muted)}
+.calc{margin-top:20px;padding:18px;background:var(--sheet);border-radius:6px}
+.calc table{width:100%;border-collapse:collapse;font-size:15px}
+.calc th,.calc td{padding:10px 0;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+.calc th{font-weight:400;color:var(--muted);font-size:13px}
+.calc td:last-child,.calc th:last-child{text-align:right;white-space:nowrap}
+.calc tr:last-child td{border-bottom:0}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:56px;padding:12px 0;font-size:17px;font-weight:600;cursor:pointer;list-style:none}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:Spectral,Georgia,serif;font-size:26px;line-height:1;color:var(--accent);flex-shrink:0}
+.faq details[open] summary::after{content:"−"}
+.faq details p{padding:0 0 18px;font-size:15px;color:var(--muted);max-width:44em}
+.band{margin-top:72px;padding:28px 20px;background:var(--btn-bg);color:var(--btn-fg);border-radius:8px;display:flex;flex-direction:column;gap:16px}
+.band .h2{margin:0;color:inherit}
+.band p{opacity:.8;font-size:15px}
+.band .btn{background:var(--btn-fg);color:var(--btn-bg)}
+.band .btn:hover{background:var(--ground);color:var(--ink)}
+.foot-cols{max-width:1120px;margin:0 auto 20px;display:grid;grid-template-columns:minmax(0,1fr);gap:20px}
+.foot-cols h3{font-size:13px;font-weight:600;color:var(--muted);margin:0 0 6px;text-transform:uppercase;letter-spacing:.06em}
+.foot-cols .stack a,.foot-cols .stack button{min-height:36px}
+.group-h{margin:28px 0 10px;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.group-h:first-child{margin-top:0}
+.mini-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.mini-stats div{padding:12px;border:1px solid var(--line);border-radius:6px}
+.mini-stats b{display:block;font-family:Spectral,Georgia,serif;font-size:22px;line-height:1.1;white-space:nowrap}
+.mini-stats span{font-size:12px;color:var(--muted)}
+.lawyers{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+
+@media (max-width:899px){
+  .desk-only{display:none!important}
+  .cta-bar ~ .cookie{bottom:calc(128px + env(safe-area-inset-bottom,0px))}
+  .tabbar ~ .cookie{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+}
 @media (min-width:900px){
+  .mob-only{display:none!important}
   .hdr{padding:12px 40px}
   .desk-nav{display:flex}
   .tabbar{display:none}
   main.has-tabs{padding-bottom:64px}
   .page{padding:0 40px}
+  .wide{padding:0 40px}
+  .split{grid-template-columns:minmax(0,1fr) 360px;grid-template-areas:"main side";column-gap:64px;align-items:start}
+  .split.main-first{grid-template-areas:"main side"}
+  .col-side{position:sticky;top:92px}
+  .col-side>:first-child{margin-top:0}
+  .col-side>.block:first-child{padding-top:0}
+  .col-main>.block:first-child{padding-top:0}
+  .cta-bar{display:none}
+  .pack{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .facts{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+  .band{flex-direction:row;align-items:center;justify-content:space-between;padding:40px 48px;gap:40px}
+  .band .btn{width:auto;min-width:300px}
+  .foot-cols{grid-template-columns:2fr 1fr 1fr;gap:40px}
+  .cards.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lawyers{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .faq{max-width:760px}
+  .login-wrap{max-width:960px}
   .hero{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);grid-template-areas:"head sheet" "upload sheet";column-gap:72px;row-gap:32px;align-items:start;padding-top:56px}
   .hero-head .title{font-size:62px}
   .hero-upload{max-width:420px}
@@ -253,12 +330,22 @@ function fmt(n){return Number(n).toLocaleString('ru-RU');}
 function rub(n){return fmt(n)+'\u00A0₽';}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function short(num){return '…'+String(num).slice(-7);}
+function parseD(v){var p=String(v).split('.');return new Date(+p[2],+p[1]-1,+p[0]);}
+function fmtD(d){return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear();}
+function addDays(v,n){var d=parseD(v);d.setDate(d.getDate()+n);return fmtD(d);}
+function validD(v){if(!/^\d{2}\.\d{2}\.\d{4}$/.test(v))return false;var d=parseD(v);return fmtD(d)===v&&d<=parseD(TODAY);}
+function daysTo(v){return Math.round((parseD(v)-parseD(TODAY))/864e5);}
+function plural(n,one,few,many){var a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;}
+function left(v){var n=daysTo(v);if(n<0)return 'срок истёк';if(n===0)return 'сегодня последний день';return 'осталось '+n+'\u00A0'+plural(n,'день','дня','дней');}
+function discountOn(d){return daysTo(d.discountUntil)>=0;}
+function missed(d){return daysTo(d.deadline)<0;}
+function pts(n){return fmt(n)+'\u00A0'+plural(n,'балл','балла','баллов');}
 
 function fresh(){return {v:1,scenario:'high',user:null,balance:0,freeCredits:0,cases:[],ops:[],ref:{invited:[],earned:0},cookie:false,notify:{court:true,deadlines:true},draft:null};}
 function load(){try{var r=localStorage.getItem(KEY);if(r){var s=JSON.parse(r);if(s&&s.v===1)return s;}}catch(e){}return fresh();}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 var S=load();
-var ui={loginStep:'phone',phone:'',consent:true,code:'',resend:45,strategy:'pay'};
+var ui={loginStep:'phone',phone:'',consent:false,code:'',resend:45,strategy:'pay'};
 var timers=[];
 function later(fn,ms){timers.push(setTimeout(fn,ms));}
 function every(fn,ms){timers.push(setInterval(fn,ms));}
@@ -289,7 +376,10 @@ function mockDecree(file,sample){
   var a=sample?ARTS[0]:ARTS[Math.floor(Math.random()*ARTS.length)];
   var n='1881057726';for(var i=0;i<10;i++)n+=Math.floor(Math.random()*10);
   if(sample)n='18810577260917012345';
-  return {number:n,issued:'17.09.2026',deadline:'28.09.2026',daysLeft:3,discountUntil:'07.10.2026',art:a.art,sum:a.sum,place:'[адрес камеры]',court:'[Районный суд по месту камеры]',file:file||'Пример постановления.pdf'};
+  return withTerms({number:n,issued:'17.09.2026',art:a.art,sum:a.sum,place:'[адрес камеры]',court:'[Районный суд по месту камеры]',file:file||'Пример постановления.pdf'});
+}
+/* Срок обжалования: 10 дней (считаем от даты вынесения, пока не знаем дату получения). Скидка 50%: 20 дней с даты вынесения. */
+function withTerms(d){d.deadline=addDays(d.issued,10);d.discountUntil=addDays(d.issued,20);return d;
 }
 function seed(){
   S.user=S.user||{phone:'+7 (900) 000-00-00',name:'',email:''};
@@ -308,7 +398,7 @@ function seed(){
 function hasWin(){return S.cases.some(function(c){return c.status==='cancelled';});}
 function findCase(id){for(var i=0;i<S.cases.length;i++)if(S.cases[i].id===id)return S.cases[i];return null;}
 function price(strategy){
-  var d=S.draft;var base=strategy==='pay'?d.sum/2:d.sum;
+  var d=S.draft;var base=strategy==='pay'&&discountOn(d)?d.sum/2:d.sum;
   if(!hasWin())return {free:true,reason:'first',base:base};
   if(S.freeCredits>0)return {free:true,reason:'credit',base:base};
   var fee=Math.round(base*0.2);var pts=Math.min(S.balance,fee);
@@ -316,14 +406,22 @@ function price(strategy){
 }
 
 /* ---------- shared pieces ---------- */
+var LOGO='<a class="logo" href="#/">[Название]</a>';
+function userLink(){return S.user?'<a class="hdr-link" href="#/history">Мои дела</a>':'<a class="hdr-link" href="#/login?next=/history">Войти</a>';}
 function hdrLogo(right){
-  if(right===undefined)right=S.user?'<a class="hdr-link" href="#/history">Мои дела</a>':'<a class="hdr-link" href="#/login?next=/history">Войти</a>';
-  return '<header class="hdr"><a class="logo" href="#/">[Название]</a>'+right+'</header>';
+  if(right===undefined)right=userLink();
+  return '<header class="hdr">'+LOGO+right+'</header>';
 }
-function hdrBack(label,to){return '<header class="hdr"><a class="back" href="'+to+'">'+I.back+esc(label)+'</a></header>';}
+function hdrLanding(){
+  var nav=[['how','Как это работает'],['price','Стоимость'],['faq','Вопросы']].map(function(x){return '<a href="#/" data-action="jump" data-target="'+x[0]+'">'+x[1]+'</a>';}).join('')+'<a href="#/about">О нас</a>';
+  return '<header class="hdr"><div class="hdr-l">'+LOGO+'<nav class="desk-nav" aria-label="Разделы страницы">'+nav+'</nav></div>'+userLink()+'</header>';
+}
+function hdrBack(label,to,noUser){
+  return '<header class="hdr"><div class="hdr-l"><span class="desk-only">'+LOGO+'</span><a class="back" href="'+to+'">'+I.back+esc(label)+'</a></div>'+(S.user&&!noUser?'<span class="desk-only">'+userLink()+'</span>':'')+'</header>';
+}
 var TABS=[['history','Дела','file'],['referral','Друзья','users'],['profile','Профиль','user'],['about','О нас','info']];
 function hdrCab(active){
-  return '<header class="hdr"><a class="logo" href="#/">[Название]</a><nav class="desk-nav" aria-label="Разделы кабинета">'+
+  return '<header class="hdr">'+LOGO+'<nav class="desk-nav" aria-label="Разделы кабинета">'+
     TABS.map(function(t){return '<a href="#/'+t[0]+'"'+(t[0]===active?' aria-current="page"':'')+'>'+t[1]+'</a>';}).join('')+
     '</nav></header>';
 }
@@ -335,6 +433,7 @@ function kvDecree(d){
   return '<dl class="kv"><dt>Номер</dt><dd>'+esc(d.number)+'</dd><dt>Вынесено</dt><dd>'+esc(d.issued)+'</dd><dt>Статья</dt><dd>'+esc(d.art)+'</dd><dt>Место</dt><dd>'+esc(d.place||'[адрес камеры]')+'</dd><dt>Штраф</dt><dd><b>'+rub(d.sum)+'</b></dd></dl>';
 }
 function segs(pct){var on=Math.round(pct/10),s='';for(var i=0;i<10;i++)s+='<i class="'+(i<on?'on':'')+'" style="animation-delay:'+(i*40)+'ms"></i>';return '<div class="seg" aria-hidden="true">'+s+'</div>';}
+function numListM(items){return '<div style="margin-top:16px">'+numList(items)+'</div>';}
 function numList(items){return '<ol class="num-list">'+items.map(function(t,i){return '<li><span class="n" aria-hidden="true">'+(i+1)+'</span><span>'+t+'</span></li>';}).join('')+'</ol>';}
 function cookieBar(){
   if(S.cookie)return '';
@@ -342,44 +441,88 @@ function cookieBar(){
 }
 
 /* ---------- views ---------- */
+function uploadBtn(id,label){
+  return '<label class="btn" for="'+id+'">'+I.upload+(label||'Загрузить постановление')+'</label>'+
+    '<input id="'+id+'" class="sr-only" type="file" accept="application/pdf,image/*" data-change="file">';
+}
 function vLanding(){
-  return hdrLogo()+
+  var faq=[
+    ['Нужно ли ходить в суд?','Нет. К жалобе всегда прилагаем ходатайство о рассмотрении дела без вашего участия. Суд направит вам копию решения, а мы раньше увидим его на сайте суда и сообщим в SMS.'],
+    ['Кто подаёт жалобу?','Вы сами, онлайн через ГАС «Правосудие» со входом через Госуслуги. Мы готовим документы и объясняем, куда и как подать. Представителем в суде мы не выступаем, доверенность не нужна.'],
+    ['Почему сразу в суд, а не в ГИБДД?','Жалобу на постановление можно подать напрямую в суд. Суд независим от органа, который выписал штраф, и оценивает доказательства заново.'],
+    ['Можно оплатить штраф и всё равно обжаловать?','Да. Оплатите со скидкой 50%, пока она действует, и подайте жалобу. Если суд отменит постановление, оплаченный штраф вернут.'],
+    ['Что будет, если суд откажет?','Штраф останется в силе. Если вы платили за обжалование, вернём всю сумму баллами на счёт: следующее обжалование будет за наш счёт.'],
+    ['Я пропустил 10-дневный срок. Что делать?','Загрузите постановление. Если срок пропущен, подготовим ходатайство о восстановлении срока и добавим его в пакет документов. Решение о восстановлении принимает суд.'],
+    ['Как вы обращаетесь с моими данными?','Персональные данные обрабатываются в России по 152-ФЗ. Постановление читает модель GigaChat; другие системы получают только обезличенные данные. Файлы храним [N] дней и удаляем автоматически.']
+  ];
+  return hdrLanding()+
   '<main id="main"><div class="page">'+
   '<section class="hero">'+
     '<div class="hero-head"><h1 class="title">Отмените штраф с камеры через суд</h1>'+
-    '<p class="lead">Загрузите постановление. Оценим шансы по судебной практике и подготовим жалобу по шаблонам юристов.</p></div>'+
+    '<p class="lead">Загрузите постановление. Оценим шансы по судебной практике и подготовим жалобу по шаблонам юристов. Пока ни один штраф не отменён, это бесплатно.</p></div>'+
     '<div class="hero-sheet"><div class="doc" aria-label="Пример постановления">'+
       '<p class="doc-kicker">Постановление</p><p class="doc-no">№ 18810577260917012345</p>'+
       '<p class="tiny muted">по делу об административном правонарушении</p>'+
       '<dl class="kv"><dt>Дата</dt><dd>17.09.2026</dd><dt>Статья</dt><dd>ч. 5 ст. 12.16 КоАП РФ</dd><dt>Место</dt><dd>[адрес камеры]</dd><dt>Штраф</dt><dd><span class="circled">3&nbsp;000&nbsp;₽<svg width="112" height="48" viewBox="0 0 112 48" fill="none" aria-hidden="true"><path class="ink-draw" d="M60 6 C 94 4, 110 14, 106 26 C 102 40, 62 44, 30 41 C 8 38, 2 26, 10 16 C 18 7, 42 3, 70 5" stroke="currentColor" style="color:var(--accent)" stroke-width="2" stroke-linecap="round"/></svg></span></dd></dl>'+
       '<div class="margin-note"><svg width="34" height="26" viewBox="0 0 34 26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 23 C 22 23, 10 17, 6 4"/><path d="M2 9 L6 3 L11 8"/></svg><span>можно оспорить</span></div>'+
     '</div></div>'+
-    '<div class="hero-upload">'+
-      '<label class="btn" for="file">'+I.upload+'Загрузить постановление</label>'+
-      '<input id="file" class="sr-only" type="file" accept="application/pdf,image/*" data-change="file">'+
+    '<div class="hero-upload">'+uploadBtn('file')+
       '<p class="small muted center">PDF, фото или скриншот. Шансы покажем без регистрации.</p>'+
       '<div class="center"><button type="button" class="link" data-action="sample">Попробовать на примере</button></div>'+
       '<p class="tiny muted center">Загружая файл, вы принимаете <a href="#/doc/terms">пользовательское соглашение</a></p>'+
+      '<ul class="trust" style="margin-top:14px;padding-top:16px;border-top:1px solid var(--line)">'+
+        '<li>'+I.check+'<span>Шаблоны жалоб составили и проверили практикующие юристы</span></li>'+
+        '<li>'+I.check+'<span>Подаёте от своего имени, в суд ходить не нужно</span></li>'+
+        '<li>'+I.check+'<span>Не отменили: следующее обжалование за наш счёт</span></li></ul>'+
     '</div>'+
   '</section>'+
-  '<section class="land-sec"><h2 class="h2">Как это работает</h2><ol class="how">'+
+  '<section class="land-sec" id="how"><h2 class="h2">Как это работает</h2><ol class="how">'+
     '<li><span class="n" aria-hidden="true">1</span><div><b>Оценка шансов</b><span>Смотрим фабулу дела и свежую практику судов. Если шансы низкие, скажем честно и не возьмём денег.</span></div></li>'+
-    '<li><span class="n" aria-hidden="true">2</span><div><b>Жалоба по шаблону юристов</b><span>Собираем жалобу из шаблонов, которые написали и проверили практикующие юристы.</span></div></li>'+
-    '<li><span class="n" aria-hidden="true">3</span><div><b>Подача и контроль</b><span>Вы подаёте жалобу в суд онлайн от своего имени. Мы следим за делом на сайте суда и сообщаем о каждом шаге.</span></div></li>'+
+    '<li><span class="n" aria-hidden="true">2</span><div><b>Жалоба по шаблону юристов</b><span>Собираем жалобу и ходатайства из шаблонов, которые написали и проверили практикующие юристы. Суд определяем по месту камеры.</span></div></li>'+
+    '<li><span class="n" aria-hidden="true">3</span><div><b>Подача и контроль</b><span>Вы подаёте жалобу в суд онлайн от своего имени. Мы следим за делом на сайте суда и сообщаем о каждом шаге в SMS.</span></div></li>'+
   '</ol></section>'+
+  '<section class="land-sec"><h2 class="h2">Что вы получите</h2><div class="pack">'+
+    '<div class="pack-item">'+I.file+'<div><b>Жалоба в суд</b><span>С доводами под ваше постановление и ссылками на нормы КоАП РФ.</span></div></div>'+
+    '<div class="pack-item">'+I.file+'<div><b>Ходатайство о рассмотрении без участия</b><span>Прикладываем всегда: приходить в суд не нужно.</span></div></div>'+
+    '<div class="pack-item">'+I.file+'<div><b>Ходатайство о восстановлении срока</b><span>Если 10 дней на обжалование уже прошли.</span></div></div>'+
+    '<div class="pack-item">'+I.info+'<div><b>Инструкция и отслеживание</b><span>Куда и как подать через ГАС «Правосудие». Статус дела с сайта суда и напоминания о сроках.</span></div></div>'+
+  '</div></section>'+
+  '<section class="land-sec"><h2 class="h2">Сроки, о которых важно знать</h2><div class="facts">'+
+    '<div class="fact"><div class="v">10 дней</div><p>На подачу жалобы после получения постановления. Напомним заранее.</p></div>'+
+    '<div class="fact"><div class="v">20 дней</div><p>Действует скидка 50% на оплату штрафа с даты постановления. Её можно использовать и при обжаловании.</p></div>'+
+    '<div class="fact"><div class="v">Пропустили?</div><p>Подготовим ходатайство о восстановлении срока. Решение о восстановлении принимает суд.</p></div>'+
+  '</div></section>'+
   '<div class="land-grid">'+
-  '<section class="land-sec"><h2 class="h2">Сколько стоит</h2><div class="rows">'+
-    '<div class="row"><span>Первое обжалование</span><span class="price-val">Бесплатно</span></div>'+
-    '<div class="row"><span>Пока нет ни одной отмены</span><span class="price-val">Бесплатно</span></div>'+
-    '<div class="row"><span>После первой отмены</span><span class="price-val">20% от штрафа</span></div></div>'+
-    '<p class="muted" style="margin-top:14px;font-size:15px">Не отменили? Оплата вернётся баллами на счёт и пойдёт на следующее обжалование.</p></section>'+
+  '<section class="land-sec" id="price"><h2 class="h2">Сколько стоит</h2><div class="rows">'+
+    '<div class="row"><span>Пока ни один штраф не отменён</span><span class="price-val">Бесплатно</span></div>'+
+    '<div class="row"><span>После первой отмены</span><span class="price-val">20% от штрафа</span></div>'+
+    '<div class="row"><span>Если суд откажет</span><span class="price-val">Вернём баллами</span></div></div>'+
+    '<p class="muted" style="margin-top:14px;font-size:15px">Считаем от суммы, которую вы реально платите по штрафу. Оплатили со скидкой 50%: берём 20% от половины. Оплата вносится заранее. Не отменили: вся сумма вернётся баллами на следующее обжалование, 1 балл = 1 ₽.</p>'+
+    '<div class="calc"><table><caption class="h3" style="text-align:left">Пример для штрафа 3 000 ₽ после первой отмены</caption>'+
+      '<thead><tr><th scope="col">Что делаете со штрафом</th><th scope="col">Обжалование</th></tr></thead><tbody>'+
+      '<tr><td>Оплачиваете со скидкой: 1 500 ₽</td><td><b>300 ₽</b></td></tr>'+
+      '<tr><td>Не платите до решения суда</td><td><b>600 ₽</b></td></tr></tbody></table></div>'+
+    '<p class="small muted" style="margin-top:12px">Три друга, которые загрузят своё постановление, дают одно обжалование бесплатно.</p></section>'+
   '<section class="land-sec"><h2 class="h2">Где взять постановление</h2>'+
-    '<p class="muted" style="font-size:15px">Подойдёт бумажное письмо, PDF из Госуслуг или скриншот из приложения. Если файл не распознается, покажем, как скачать постановление с Госуслуг.</p></section>'+
-  '</div></div></main>'+
-  '<footer class="site"><div class="inner">'+
-    '<a class="link plain" href="#/about">О нас и реквизиты</a><a class="link plain" href="#/doc/terms">Пользовательское соглашение</a><a class="link plain" href="#/doc/privacy">Политика обработки персональных данных</a>'+
-    '<button type="button" class="link plain" data-action="demo">Демо-настройки</button><span class="small muted">© 2026 [Юрлицо]</span>'+
-  '</div></footer>';
+    '<p class="muted" style="font-size:15px">Подойдёт бумажное письмо, PDF из Госуслуг или скриншот из приложения. Если файл не распознается, покажем, как скачать постановление с Госуслуг.</p>'+
+    numListM(['Госуслуги: раздел «Штрафы», откройте штраф и скачайте постановление в PDF.','Бумажное письмо: сфотографируйте первую страницу целиком, без бликов.','Приложение банка или «Штрафы ГИБДД»: сделайте скриншот, где виден номер постановления.'])+
+    '<h3 class="h3" style="margin-top:32px">Какие штрафы можно обжаловать</h3>'+
+    '<p class="muted" style="font-size:15px">Любые постановления по данным камер автофиксации: превышение скорости, выезд на выделенную полосу, проезд на красный, нарушение разметки, остановка и стоянка. Шансы зависят от обстоятельств, поэтому сначала оцениваем их.</p></section>'+
+  '</div>'+
+  '<section class="land-sec" id="faq"><h2 class="h2">Частые вопросы</h2><div class="faq">'+
+    faq.map(function(q){return '<details><summary>'+q[0]+'</summary><p>'+q[1]+'</p></details>';}).join('')+
+  '</div></section>'+
+  '<section class="band"><div><h2 class="h2">Проверьте шансы по своему постановлению</h2><p style="margin-top:8px">Без регистрации. Регистрация понадобится, только если решите обжаловать.</p></div>'+
+    '<div class="stack" style="gap:8px">'+uploadBtn('file2')+'</div></section>'+
+  '</div></main>'+footer();
+}
+function footer(){
+  return '<footer class="site"><div class="foot-cols">'+
+    '<div><p class="logo" style="font-size:19px">[Название]</p><p class="small muted" style="margin-top:8px;max-width:30em">Готовим жалобы в суд на постановления с камер автофиксации. Услуга оказывается в форме юридической консультации по <a href="#/doc/offer">оферте</a>.</p>'+
+      '<p class="tiny muted" style="margin-top:12px">[Юрлицо] · ИНН [ИНН] · ОГРН [ОГРН]<br>Оператор ПДн, рег. № [номер] в реестре РКН</p></div>'+
+    '<div><h3>Сервис</h3><div class="stack"><a class="link plain" href="#/about">О нас и реквизиты</a><a class="link plain" href="#/doc/guide">Как подать жалобу</a>'+(S.user?'<a class="link plain" href="#/referral">Пригласить друзей</a>':'')+'<button type="button" class="link plain" data-action="demo">Демо-настройки</button></div></div>'+
+    '<div><h3>Документы</h3><div class="stack"><a class="link plain" href="#/doc/terms">Пользовательское соглашение</a><a class="link plain" href="#/doc/offer">Оферта</a><a class="link plain" href="#/doc/privacy">Политика обработки ПДн</a><a class="link plain" href="#/doc/cookies">Политика cookie</a></div></div>'+
+  '</div><div class="inner"><span class="small muted">© 2026 [Юрлицо]</span></div></footer>';
 }
 
 var STEPS=['Распознаём текст постановления','Сверяем с практикой судов','Оцениваем шансы'];
@@ -400,32 +543,53 @@ function runAnalyzing(){
   tick();
 }
 
+function priceHint(){
+  if(!hasWin())return 'Бесплатно: пока ни один ваш штраф не отменён';
+  if(S.freeCredits>0)return 'Бесплатно: обжалование за приглашённых друзей';
+  var p=price('pay'),w=price('wait');
+  return 'От '+rub(Math.min(p.fee,w.fee))+'. Не отменят: вернём баллами';
+}
 function vResult(){
   var d=S.draft;if(!d)return null;
   var low=S.scenario==='low'&&!ui.retry;
-  var head=hdrBack('Назад','#/')+'<main id="main" class="narrow">'+
-    '<p class="small muted" style="display:flex;align-items:center;gap:8px">'+I.check+'Постановление распознано</p>';
+  var disc=discountOn(d);
+  var mini=kvMini(d);
+  var recog='<p class="small muted" style="display:flex;align-items:center;gap:8px;min-height:32px">'+I.check+'Постановление распознано</p>';
   if(low){
-    return head+
-      '<div class="sheet" style="margin-top:12px;padding:14px 16px;display:flex;justify-content:space-between;gap:12px;font-size:14px"><div><div class="muted">№ '+esc(short(d.number))+'</div><div style="margin-top:2px">'+esc(d.art)+'</div></div><b style="white-space:nowrap">'+rub(d.sum)+'</b></div>'+
-      '<section class="block"><p class="small muted">Шансы на отмену</p><div class="verdict"><h1 class="big" style="margin:0">Низкие</h1><span class="pct">18%</span></div>'+segs(18)+'</section>'+
-      '<section class="block"><h2 class="h3">Почему шансы низкие</h2>'+numList(REASONS.low)+
-      '<p style="margin-top:20px;font-size:15px">Мы не будем готовить жалобу: скорее всего, вы потеряете время и скидку на оплату.</p></section>'+
-      '<section class="sheet" style="margin-top:28px;padding:20px"><h2 class="h2" style="font-size:24px;margin-bottom:8px">Выгоднее оплатить со скидкой</h2>'+
+    var pay=disc?
+      '<h2 class="h2" style="font-size:24px;margin-bottom:8px">Выгоднее оплатить со скидкой</h2>'+
       '<div style="display:flex;align-items:baseline;gap:10px"><span class="serif" style="font-size:36px;font-weight:600">'+rub(d.sum/2)+'</span><s class="muted">'+rub(d.sum)+'</s></div>'+
-      '<p class="muted" style="margin-top:4px;font-size:15px">Скидка 50% действует до '+d.discountUntil+'</p>'+
+      '<p class="muted" style="margin-top:4px;font-size:15px">Скидка 50% действует до '+d.discountUntil+', '+left(d.discountUntil)+'.</p>'
+      :'<h2 class="h2" style="font-size:24px;margin-bottom:8px">Оплатите штраф</h2><div class="serif" style="font-size:36px;font-weight:600">'+rub(d.sum)+'</div>'+
+      '<p class="muted" style="margin-top:4px;font-size:15px">Срок скидки 50% истёк '+d.discountUntil+'. Штраф нужно оплатить в течение 60 дней после вступления постановления в силу, иначе грозит двойной штраф.</p>';
+    return hdrBack('Назад','#/')+'<main id="main" class="wide" style="padding-bottom:48px"><div class="split main-first">'+
+      '<div class="col-main">'+recog+'<div style="margin-top:8px">'+mini+'</div>'+
+      '<section class="block"><p class="small muted">Шансы на отмену</p><div class="verdict"><h1 class="big" style="margin:0">Низкие</h1><span class="pct">18%</span></div>'+segs(18)+
+      '<p class="tiny muted" style="margin-top:10px">Оценка по фабуле дела и актуальной судебной практике. Это прогноз, а не гарантия.</p></section>'+
+      '<section class="block"><h2 class="h3">Почему шансы низкие</h2>'+numList(REASONS.low)+
+      '<p style="margin-top:20px;font-size:15px">Мы не будем готовить жалобу: скорее всего, вы потеряете время'+(disc?' и скидку на оплату':'')+'. Денег за проверку не берём.</p></section></div>'+
+      '<aside class="col-side"><section class="sheet" style="margin-top:28px;padding:20px">'+pay+
       '<a class="btn" style="margin-top:18px" href="https://www.gosuslugi.ru" target="_blank" rel="noopener">Оплатить на Госуслугах</a></section>'+
-      '<div class="center" style="padding:14px 0 40px"><a class="link" href="#/">Проверить другое постановление</a></div></main>';
+      '<div class="center" style="padding:14px 0"><a class="link" href="#/">Проверить другое постановление</a></div></aside></div></main>';
   }
-  return head+
-    '<div class="sheet pad" style="margin-top:12px">'+kvDecree(d)+'<button type="button" class="link small" data-action="edit">Данные неверны? Исправить</button></div>'+
-    '<div class="warn" style="margin-top:12px">Обжаловать нужно до <b>'+d.deadline+'</b>. Осталось '+d.daysLeft+' дня.</div>'+
+  var late=missed(d);
+  var deadline=late?
+    '<div class="warn">Срок обжалования истёк '+d.deadline+'. Добавим в пакет ходатайство о восстановлении срока. Решение о восстановлении примет суд.</div>'
+    :'<div class="warn">Обжаловать нужно до <b>'+d.deadline+'</b>: '+left(d.deadline)+'.</div>';
+  var discNote=disc?'<p class="small muted" style="margin-top:10px">Скидка 50% на оплату штрафа до '+d.discountUntil+'. Её можно использовать и при обжаловании: выберете на следующем шаге.</p>':'';
+  var cta='<button type="button" class="btn" data-action="appeal">Обжаловать</button>';
+  return hdrBack('Назад','#/')+'<main id="main" class="wide"><div class="split">'+
+    '<aside class="col-side"><div class="mob-only">'+recog+'</div>'+
+      '<div class="sheet pad" style="margin-top:8px">'+kvDecree(d)+'<button type="button" class="link small" data-action="edit">Данные неверны? Исправить</button></div>'+
+      '<div style="margin-top:12px">'+deadline+discNote+'</div>'+
+      '<div class="side-card desk-only">'+cta+'<p class="small muted center">'+priceHint()+'</p></div></aside>'+
+    '<div class="col-main"><div class="desk-only">'+recog+'</div>'+
     '<section class="block"><p class="small muted">Шансы на отмену</p><div class="verdict"><h1 class="big" style="margin:0">Высокие</h1><span class="pct">72%</span></div>'+segs(72)+
     '<p class="tiny muted" style="margin-top:10px">Оценка по фабуле дела и актуальной судебной практике. Это прогноз, а не гарантия.</p></section>'+
     '<section class="block"><h2 class="h3">Почему шансы высокие</h2>'+numList(REASONS.high)+'</section>'+
     '<section class="boxed" style="margin-top:26px"><b>Рекомендация: обжаловать</b><p class="muted" style="margin-top:6px;font-size:15px">Подготовим жалобу под вашу ситуацию. Что делать со штрафом, оплатить сейчас или ждать суда, решите на следующем шаге.</p></section>'+
-    '</main><div class="cta-bar"><div class="inner"><button type="button" class="btn" data-action="appeal">Обжаловать</button>'+
-    '<p class="small muted center">'+(hasWin()?(S.freeCredits>0?'Есть бесплатное обжалование за друзей':'20% от штрафа, при неудаче вернём баллами'):'Первое обжалование бесплатно')+'</p></div></div>';
+    '<section class="block"><h2 class="h3">Что будет дальше</h2>'+numList(['Войдёте по номеру телефона, чтобы сохранить дело.','Выберете, что делать со штрафом, и получите пакет документов'+(late?' с ходатайством о восстановлении срока':'')+'.','Подадите жалобу через ГАС «Правосудие». Мы будем следить за делом и пришлём решение суда.'])+'</section>'+
+    '</div></div></main><div class="cta-bar"><div class="inner">'+cta+'<p class="small muted center">'+priceHint()+'</p></div></div>';
 }
 
 function vGuide(){
@@ -446,7 +610,7 @@ function vLogin(q){
     var ok=ui.phone.replace(/\D/g,'').length===11&&ui.consent;
     body='<form class="stack" style="gap:16px;margin-top:28px" data-submit="phone" novalidate>'+
       '<div class="field"><label for="phone">Номер телефона</label><input id="phone" class="input" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 (900) 000-00-00" value="'+esc(ui.phone)+'" data-input="phone"></div>'+
-      '<label class="check"><input type="checkbox" data-change="consent"'+(ui.consent?' checked':'')+'><span>Согласен на <a href="#/doc/consent">обработку персональных данных</a></span></label>'+
+      '<label class="check"><input type="checkbox" data-change="consent"'+(ui.consent?' checked':'')+'><span>Даю <a href="#/doc/consent">согласие на обработку персональных данных</a></span></label>'+
       '<button class="btn" id="phoneBtn" type="submit"'+(ok?'':' disabled')+'>Получить код</button></form>';
   }else{
     body='<form class="stack" style="gap:16px;margin-top:28px" data-submit="code" data-next="'+esc(next)+'" novalidate>'+
@@ -456,21 +620,26 @@ function vLogin(q){
       '<button class="btn" id="codeBtn" type="submit" disabled>Подтвердить</button>'+
       '<p class="small muted center" id="resend">'+resendText()+'</p></form>';
   }
-  return hdrBack('Назад',S.draft?'#/result':'#/')+'<main id="main" class="narrow" style="padding-top:12px">'+
-    '<h1 class="title">Сохраним дело за вами</h1><p class="lead">Войдите по номеру телефона. Здесь будут жалоба, статус дела в суде и история.</p>'+body+
-    '<p class="small muted" style="margin-top:40px;padding-top:16px;border-top:1px solid var(--line)">Первое обжалование бесплатно. Пока ни один штраф не отменён, следующие тоже бесплатны.</p></main>';
+  var fromAppeal=next==='/checkout'&&S.draft;
+  return hdrBack('Назад',fromAppeal?'#/result':'#/',true)+'<main id="main" class="wide login-wrap" style="padding-top:12px;padding-bottom:48px"><div class="split main-first"><div class="col-main" style="max-width:520px">'+
+    '<h1 class="title">'+(fromAppeal?'Сохраним дело за вами':'Вход')+'</h1><p class="lead">Войдите по номеру телефона. Здесь будут жалоба, статус дела в суде и история.</p>'+body+'</div>'+
+    '<aside class="col-side"><div class="side-card" style="margin-top:40px"><h2 class="h3">Что будет в кабинете</h2>'+
+    '<ul class="trust"><li>'+I.check+'<span>Пакет документов для суда и инструкция по подаче</span></li><li>'+I.check+'<span>Статус дела с сайта суда и SMS о каждом шаге</span></li><li>'+I.check+'<span>Напоминания о сроках обжалования и скидки</span></li><li>'+I.check+'<span>Баллы и бесплатные обжалования за друзей</span></li></ul>'+
+    '<p class="small muted" style="padding-top:12px;border-top:1px solid var(--line-soft)">Пока ни один штраф не отменён, обжалование бесплатное.</p></div></aside></div></main>';
 }
 function resendText(){return ui.resend>0?'Отправить код повторно через 0:'+String(ui.resend).padStart(2,'0'):'<button type="button" class="link" data-action="resend">Отправить код повторно</button>';}
-function startResend(){ui.resend=45;every(function(){if(ui.resend>0){ui.resend--;var r=document.getElementById('resend');if(r)r.innerHTML=resendText();}},1000);}
+var resendTimer=null;
+function startResend(){ui.resend=45;if(resendTimer)clearInterval(resendTimer);resendTimer=setInterval(function(){if(ui.resend>0){ui.resend--;var r=document.getElementById('resend');if(r)r.innerHTML=resendText();}if(ui.resend<=0||current.view!=='login'){clearInterval(resendTimer);resendTimer=null;}},1000);}
 function maskPhone(v){
   var d=v.replace(/\D/g,'');if(d[0]==='8')d='7'+d.slice(1);if(d&&d[0]!=='7')d='7'+d;d=d.slice(0,11);
   if(!d)return '';var r='+7';var p=d.slice(1);
-  if(p.length)r+=' ('+p.slice(0,3);if(p.length>=3)r+=')';if(p.length>3)r+=' '+p.slice(3,6);if(p.length>6)r+='-'+p.slice(6,8);if(p.length>8)r+='-'+p.slice(8,10);
+  if(p.length)r+=' ('+p.slice(0,3);if(p.length>3)r+=') '+p.slice(3,6);if(p.length>6)r+='-'+p.slice(6,8);if(p.length>8)r+='-'+p.slice(8,10);
   return r;
 }
 
 function vCheckout(){
   var d=S.draft;if(!d)return null;
+  var disc=discountOn(d);
   var p=price(ui.strategy);var isPay=ui.strategy==='pay';
   var cost;
   if(p.free){
@@ -479,22 +648,30 @@ function vCheckout(){
   }else{
     cost='<div class="sheet pad stack" style="gap:10px;font-size:15px">'+
       '<div style="display:flex;justify-content:space-between;gap:12px"><span class="muted">20% от '+rub(p.base)+'</span><span>'+rub(p.fee)+'</span></div>'+
-      '<div style="display:flex;justify-content:space-between;gap:12px"><span class="muted">Баллы со счёта</span><span>−'+fmt(p.pts)+'</span></div>'+
+      '<div style="display:flex;justify-content:space-between;gap:12px"><span class="muted">Баллы со счёта</span><span>'+(p.pts?'−'+fmt(p.pts):'0')+'</span></div>'+
       '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-top:10px;border-top:1px solid var(--line)"><b>К оплате</b><span class="serif" style="font-size:30px;font-weight:600">'+rub(p.toPay)+'</span></div>'+
-      '<p class="small muted">Если постановление не отменят, '+fmt(p.fee)+' баллов вернутся на счёт для следующего обжалования. 1 балл = 1 ₽.</p></div>';
+      '<p class="small muted">Гарантия: если постановление не отменят, '+pts(p.fee)+' вернутся на счёт, и следующее обжалование будет за наш счёт. 1 балл = 1 ₽.</p></div>';
   }
   var cta=p.free?'Получить жалобу':(p.toPay>0?'Оплатить '+rub(p.toPay)+' и получить жалобу':'Списать баллы и получить жалобу');
-  return hdrBack('Назад','#/result')+'<main id="main" class="narrow" style="padding-top:8px">'+
+  var ctaBtn='<button type="button" class="btn" data-action="checkout">'+cta+'</button><p class="tiny muted center">Продолжая, вы принимаете <a href="#/doc/offer">оферту</a></p>';
+  var payLabel=disc?'<b>Оплатить сейчас со скидкой</b><span>'+rub(d.sum/2)+' вместо '+rub(d.sum)+', скидка до '+d.discountUntil+'. Если суд отменит постановление, деньги вернут.</span>'
+    :'<b>Оплатить сейчас</b><span>'+rub(d.sum)+': срок скидки истёк '+d.discountUntil+'. Если суд отменит постановление, деньги вернут.</span>';
+  var pack=['Жалоба на постановление','Ходатайство о рассмотрении без вашего участия'];if(missed(d))pack.push('Ходатайство о восстановлении срока');pack.push('Инструкция по подаче в '+d.court);
+  return hdrBack('Назад','#/result')+'<main id="main" class="wide" style="padding-top:8px;padding-bottom:48px"><div class="split main-first"><div class="col-main" style="max-width:600px">'+
     '<h1 class="title">Последний шаг</h1>'+
-    '<fieldset style="margin:24px 0 0;padding:0;border:0" class="stack"><legend class="h3" style="padding:0">Что делать со штрафом</legend><div class="stack" style="gap:10px">'+
-    '<label class="opt'+(isPay?' sel':'')+'"><input type="radio" name="strategy" value="pay" data-change="strategy"'+(isPay?' checked':'')+'><span><b>Оплатить сейчас со скидкой</b><span>'+rub(d.sum/2)+' до '+d.discountUntil+'. Если суд отменит постановление, деньги вернут.</span></span></label>'+
+    '<div style="margin-top:14px">'+kvMini(d)+'</div>'+
+    '<fieldset style="margin:28px 0 0;padding:0;border:0" class="stack"><legend class="h3" style="padding:0">Что делать со штрафом</legend><div class="stack" style="gap:10px">'+
+    '<label class="opt'+(isPay?' sel':'')+'"><input type="radio" name="strategy" value="pay" data-change="strategy"'+(isPay?' checked':'')+'><span>'+payLabel+'</span></label>'+
     '<label class="opt'+(!isPay?' sel':'')+'"><input type="radio" name="strategy" value="wait" data-change="strategy"'+(!isPay?' checked':'')+'><span><b>Не платить до решения суда</b><span>Ничего не платите, пока идёт суд.</span></span></label>'+
-    (!isPay?'<div class="warn" style="font-size:14px">Если суд оставит постановление в силе, скидка может сгореть: придётся заплатить '+rub(d.sum)+'.</div>':'')+
+    (!isPay&&disc?'<div class="warn" style="font-size:14px" role="note">Если суд оставит постановление в силе, скидка может сгореть: придётся заплатить '+rub(d.sum)+' вместо '+rub(d.sum/2)+'.</div>':'')+
+    '<p class="small muted">Штраф оплачивается отдельно на Госуслугах. От выбора зависит и стоимость обжалования: считаем 20% от суммы, которую вы реально платите.</p>'+
     '</div></fieldset>'+
-    '<section class="block"><h2 class="h3">Стоимость обжалования</h2>'+cost+'</section></main>'+
-    '<div class="cta-bar"><div class="inner"><button type="button" class="btn" data-action="checkout">'+cta+'</button>'+
-    '<p class="tiny muted center">Продолжая, вы принимаете <a href="#/doc/offer">оферту</a></p></div></div>';
+    '<section class="block"><h2 class="h3">В пакет войдёт</h2><ul class="trust" style="font-size:15px;color:var(--ink)">'+pack.map(function(x){return '<li>'+I.check+'<span>'+esc(x)+'</span></li>';}).join('')+'</ul></section>'+
+    '</div><aside class="col-side"><section class="block"><h2 class="h3">Стоимость обжалования</h2>'+cost+'</section>'+
+    '<div class="side-card desk-only">'+ctaBtn+'</div></aside></div></main>'+
+    '<div class="cta-bar"><div class="inner">'+ctaBtn+'</div></div>';
 }
+function kvMini(d){return '<div class="sheet" style="padding:12px 16px;display:flex;justify-content:space-between;gap:12px;font-size:14px"><div><div class="muted">№ '+esc(short(d.number))+' от '+esc(d.issued)+'</div><div style="margin-top:2px">'+esc(d.art)+'</div></div><b style="white-space:nowrap">'+rub(d.sum)+'</b></div>';}
 
 function docsFor(c){
   var list=[['complaint','Жалоба на постановление.pdf'],['absent','Ходатайство о рассмотрении без вашего участия.pdf']];
@@ -505,48 +682,67 @@ function docsFor(c){
 function docRows(c){
   return docsFor(c).map(function(x){return '<div class="doc-row"><span class="muted">'+I.file+'</span><span class="name">'+x[1]+'</span><button type="button" class="icon-btn" aria-label="Открыть: '+x[1]+'" data-action="doc" data-doc="'+x[0]+'" data-id="'+c.id+'">'+I.eye+'</button></div>';}).join('');
 }
+function caseFacts(c){
+  var pay=c.free?'Бесплатно':(rub(c.fee)+(c.paidPoints&&c.paidCard?' (баллы '+fmt(c.paidPoints)+' + карта '+rub(c.paidCard)+')':c.paidPoints?' баллами':' картой'));
+  var strat=c.strategy==='pay'?'Оплатить со скидкой':'Не платить до решения';
+  return '<dl class="kv" style="grid-template-columns:104px minmax(0,1fr)"><dt>Номер</dt><dd>'+esc(c.number)+'</dd><dt>Вынесено</dt><dd>'+esc(c.issued)+'</dd><dt>Статья</dt><dd>'+esc(c.art)+'</dd><dt>Штраф</dt><dd><b>'+rub(c.sum)+'</b></dd><dt>Суд</dt><dd>'+esc(c.court)+'</dd><dt>Со штрафом</dt><dd>'+strat+'</dd><dt>Обжалование</dt><dd>'+pay+'</dd></dl>';
+}
+function fineNote(c){
+  if(c.status==='cancelled'||c.status==='upheld')return '';
+  if(c.strategy==='pay'){
+    return daysTo(c.discountUntil)>=0?'<div class="side-card"><b>Не забудьте оплатить штраф</b><p class="small muted">'+rub(c.sum/2)+' со скидкой до '+c.discountUntil+', '+left(c.discountUntil)+'. Если суд отменит постановление, деньги вернут.</p><a class="link small" style="min-height:32px" href="https://www.gosuslugi.ru" target="_blank" rel="noopener">Оплатить на Госуслугах</a></div>':'';
+  }
+  return '<div class="side-card"><b>Штраф не оплачиваете до решения суда</b><p class="small muted">Если постановление оставят в силе, штраф нужно будет оплатить. Скидка 50% может сгореть.</p></div>';
+}
 function vCase(id){
   var c=findCase(id);if(!c)return null;
   if(c.status==='ready'){
-    return hdrLogo('<a class="hdr-link" href="#/history">Мои дела</a>')+'<main id="main" class="narrow" style="padding-top:8px">'+
-      '<h1 class="title">Жалоба готова</h1><p class="lead">Проверьте данные и подайте жалобу в суд онлайн от своего имени.</p>'+
-      '<div class="warn" style="margin-top:18px">'+(c.restore?'Подайте жалобу вместе с ходатайством о восстановлении срока.':'Подать до <b>'+c.deadline+'</b>. Осталось 3 дня.')+'</div>'+
+    var warn=c.restore?'<div class="warn">Срок обжалования истёк '+c.deadline+'. Подайте жалобу вместе с ходатайством о восстановлении срока как можно скорее.</div>'
+      :'<div class="warn">Подать до <b>'+c.deadline+'</b>: '+left(c.deadline)+'.</div>';
+    var ctas='<button type="button" class="btn" data-action="filed" data-id="'+c.id+'">Я подал жалобу</button>'+
+      '<button type="button" class="link" style="align-self:center" data-action="later">Подам позже, напомните мне</button>';
+    return hdrLogo('<a class="hdr-link" href="#/history">Мои дела</a>')+'<main id="main" class="wide" style="padding-top:8px;padding-bottom:48px"><div class="split main-first"><div class="col-main">'+
+      '<p class="tiny muted">Постановление № '+esc(c.number)+'</p><h1 class="title" style="margin-top:6px">Жалоба готова</h1><p class="lead">Проверьте данные и подайте жалобу в суд онлайн от своего имени.</p>'+
+      '<div class="mob-only" style="margin-top:18px">'+warn+'</div>'+
       '<section class="sheet" style="margin-top:22px;padding:6px 16px 16px">'+docRows(c)+
       '<button type="button" class="btn outline sm" style="margin-top:10px" data-action="zip">Скачать всё архивом</button></section>'+
       '<section class="block" style="padding-top:36px"><h2 class="h2">Куда подавать</h2><p style="font-size:17px;font-weight:600">'+esc(c.court)+'</p>'+
       '<p class="small muted" style="margin-top:4px">Определили по адресу камеры из постановления.</p><div style="margin-top:22px">'+
-      numList(['Откройте ГАС «Правосудие» и войдите через Госуслуги.','Выберите подачу жалобы по делу об административном правонарушении и укажите суд.','Приложите файлы из архива и отправьте.'])+
+      numList(['Откройте ГАС «Правосудие» и войдите через Госуслуги.','Выберите подачу жалобы по делу об административном правонарушении и укажите суд.','Приложите файлы из архива и отправьте.','Вернитесь сюда и нажмите «Я подал жалобу»: начнём искать дело на сайте суда.'])+
       '</div><a class="link" style="margin-top:8px" href="#/doc/guide">Подробная инструкция со скриншотами</a>'+
-      '<p class="muted" style="margin-top:8px;font-size:15px">После подачи найдём дело на сайте суда и будем присылать статус в SMS.</p></section></main>'+
-      '<div class="cta-bar"><div class="inner"><button type="button" class="btn" data-action="filed" data-id="'+c.id+'">Я подал жалобу</button>'+
-      '<button type="button" class="link" style="align-self:center" data-action="later">Подам позже, напомните мне</button></div></div>';
+      '<p class="muted" style="margin-top:8px;font-size:15px">После подачи найдём дело на сайте суда и будем присылать статус в SMS.</p></section></div>'+
+      '<aside class="col-side"><div class="desk-only">'+warn+'<div class="side-card stack" style="gap:6px">'+ctas+'</div></div>'+fineNote(c)+
+      '<div class="side-card"><h2 class="h3">Данные дела</h2>'+caseFacts(c)+'</div></aside></div></main>'+
+      '<div class="cta-bar"><div class="inner">'+ctas+'</div></div>';
   }
   var titles={filed:'Жалоба подана',court:'Дело в суде',missed:'Срок подачи пропущен',cancelled:'Постановление отменено',upheld:'Оставлено в силе'};
   var mid='';
-  if(c.status==='filed')mid='<section class="sheet pad" style="margin-top:22px"><b>Ищем дело на сайте суда</b><p class="small muted" style="margin-top:6px">Обычно суд регистрирует жалобу за 1–3 рабочих дня. Пришлём SMS, как только найдём дело.</p></section>';
+  if(c.status==='filed')mid='<section class="sheet pad" style="margin-top:22px"><b>Ищем дело на сайте суда</b><p class="small muted" style="margin-top:6px">Обычно суд регистрирует жалобу за 1–3 рабочих дня. Пришлём SMS, как только найдём дело. Если не сможем найти дело, сообщим и подскажем, что проверить.</p></section>';
   if(c.status==='court')mid='<section class="sheet pad" style="margin-top:22px"><p class="small muted">Заседание</p><p class="serif" style="font-size:26px;font-weight:600;margin-top:2px">'+esc(c.hearing)+'</p>'+
     '<dl class="kv" style="margin-top:12px;grid-template-columns:70px minmax(0,1fr)"><dt>Суд</dt><dd>'+esc(c.court)+'</dd><dt>Судья</dt><dd>[ФИО судьи]</dd></dl>'+
     '<p class="small muted" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line-soft)">Приходить не обязательно: к жалобе приложено ходатайство о рассмотрении без вашего участия.</p></section>';
   if(c.status==='missed')mid='<section class="sheet pad" style="margin-top:22px"><b>Срок истёк '+c.deadline+'</b><p class="small muted" style="margin-top:6px">Если срок пропущен по уважительной причине, суд может его восстановить. Подготовим ходатайство о восстановлении срока.</p>'+
     '<button type="button" class="btn sm" style="margin-top:14px" data-action="restore" data-id="'+c.id+'">Подготовить ходатайство</button></section>';
-  if(c.status==='cancelled')mid='<section class="sheet pad" style="margin-top:22px;position:relative;overflow:hidden"><span class="stamp" style="top:18px">ОТМЕНЕНО</span><b>Решение от '+esc(c.decided)+'</b><p class="small muted" style="margin-top:6px;max-width:60%">'+(c.strategy==='pay'?'Оплаченный штраф вернут в течение нескольких недель.':'Штраф платить не нужно.')+'</p></section>';
-  if(c.status==='upheld')mid='<section class="sheet pad" style="margin-top:22px"><b>Решение от '+esc(c.decided)+'</b><p class="small muted" style="margin-top:6px">'+(c.fee?fmt(c.fee)+' баллов вернулись на счёт и пойдут на следующее обжалование.':'Постановление осталось в силе.')+'</p></section>';
+  if(c.status==='cancelled')mid='<section class="sheet pad" style="margin-top:22px;position:relative;overflow:hidden;padding-right:130px"><span class="stamp" style="top:18px">ОТМЕНЕНО</span><b>Решение от '+esc(c.decided)+'</b><p class="small muted" style="margin-top:6px">'+(c.strategy==='pay'?'Оплаченный штраф вернут: подайте заявление о возврате в орган, который вынес постановление, приложив решение суда.':'Штраф платить не нужно.')+'</p></section>'+
+    '<section class="sheet pad" style="margin-top:12px"><b>Пригласите друзей</b><p class="small muted" style="margin-top:6px">Три друга, которые загрузят своё постановление, дают вам одно бесплатное обжалование.</p><a class="link small" style="min-height:32px" href="#/referral">Получить ссылку</a></section>';
+  if(c.status==='upheld')mid='<section class="sheet pad" style="margin-top:22px"><b>Решение от '+esc(c.decided)+'</b><p class="small muted" style="margin-top:6px">'+(c.fee?pts(c.fee)+' вернулись на счёт и пойдут на следующее обжалование.':'Постановление осталось в силе. Обжалование было бесплатным.')+' Решение суда можно обжаловать в вышестоящий суд в течение 10 дней.</p></section>';
   var next='';
-  if(c.status==='court')next='<section class="block"><h2 class="h3">Что дальше</h2><p class="muted" style="font-size:15px">После заседания суд опубликует решение, мы пришлём его в SMS. Отменят постановление: оплата спишется. Оставят в силе: вернём её баллами на счёт.</p></section>';
+  if(c.status==='court')next='<section class="block"><h2 class="h3">Что дальше</h2><p class="muted" style="font-size:15px">После заседания суд опубликует решение, мы пришлём его в SMS. '+(c.free?'Обжалование для вас бесплатное при любом исходе.':'Отменят постановление: оплата спишется. Оставят в силе: вернём её баллами на счёт.')+'</p></section>';
   var demo='';
   if(c.status==='filed')demo='<details class="demo-box"><summary>Демо: ответ суда</summary><div class="btns"><button type="button" class="btn outline sm" data-action="adv" data-id="'+c.id+'">Суд назначил заседание</button></div></details>';
   if(c.status==='court')demo='<details class="demo-box"><summary>Демо: решение суда</summary><div class="btns"><button type="button" class="btn outline sm" data-action="win" data-id="'+c.id+'">Отменили</button><button type="button" class="btn outline sm" data-action="lose" data-id="'+c.id+'">Оставили в силе</button></div></details>';
-  return hdrBack('Мои дела','#/history')+'<main id="main" class="narrow" style="padding-top:4px;padding-bottom:48px">'+
+  return hdrBack('Мои дела','#/history')+'<main id="main" class="wide" style="padding-top:4px;padding-bottom:48px"><div class="split main-first"><div class="col-main">'+
     '<p class="tiny muted">Постановление № '+esc(c.number)+'</p><h1 class="title" style="margin-top:6px">'+titles[c.status]+'</h1>'+
     '<p class="muted" style="margin-top:6px;font-size:15px">'+esc(c.art)+' · '+rub(c.sum)+'</p>'+mid+
     '<section class="block"><h2 class="h3">Ход дела</h2><ol class="events">'+c.events.map(function(e){return '<li><span class="d">'+e.date+'</span><span>'+esc(e.text)+'</span></li>';}).join('')+'</ol>'+
-    '<p class="tiny muted" style="margin-top:6px">Данные с сайта суда. Обновлено '+TODAY+' в 09:40.</p></section>'+next+
-    '<section class="block"><h2 class="h3" style="margin-bottom:0">Документы</h2><div class="sheet" style="margin-top:10px;padding:4px 16px">'+docRows(c)+'</div></section>'+demo+'</main>';
+    '<p class="tiny muted" style="margin-top:6px">Данные с сайта суда. Обновлено '+TODAY+' в 09:40.</p></section>'+next+demo+'</div>'+
+    '<aside class="col-side">'+fineNote(c)+'<div class="side-card"><h2 class="h3">Данные дела</h2>'+caseFacts(c)+'</div>'+
+    '<section class="side-card"><h2 class="h3">Документы</h2><div>'+docRows(c)+'</div></section></aside></div></main>';
 }
 
 function statusOf(c){
   switch(c.status){
-    case 'ready':return {st:'Подайте до '+c.deadline.slice(0,5),hot:true,sub:rub(c.sum)+' · жалоба готова, ждёт подачи'};
+    case 'ready':return c.restore?{st:'Подайте скорее',hot:true,sub:rub(c.sum)+' · жалоба и ходатайство о восстановлении срока готовы'}:{st:'Подайте до '+c.deadline.slice(0,5),hot:true,sub:rub(c.sum)+' · жалоба готова, '+left(c.deadline)};
     case 'filed':return {st:'Подана',sub:rub(c.sum)+' · ищем дело на сайте суда'};
     case 'court':return {st:'В суде',sub:rub(c.sum)+' · заседание '+(c.hearingShort||'')};
     case 'missed':return {st:'Срок пропущен',hot:true,sub:'Срок подачи истёк '+c.deadline.slice(0,5)+'.',act:'Подготовить ходатайство'};
@@ -554,64 +750,81 @@ function statusOf(c){
     case 'upheld':return {st:'Оставлено в силе',sub:c.fee?fmt(c.fee)+' баллов вернулись на счёт':'постановление в силе'};
   }
 }
+function caseCard(c){var s=statusOf(c);
+  return '<a class="case'+(s.stamp?' stamped':'')+'" href="#/case/'+c.id+'"><div class="top"><span class="muted">№ '+esc(short(c.number))+'</span>'+(s.stamp?'':'<span class="st'+(s.hot?' hot':'')+'">'+s.st+'</span>')+'</div>'+
+    '<div class="art">'+esc(c.art)+'</div><div class="sub">'+s.sub+'</div>'+(s.act?'<div class="act">'+s.act+'</div>':'')+(s.stamp?'<span class="stamp">ОТМЕНЕНО</span>':'')+'</a>';}
 function vHistory(){
-  var list=S.cases.length?'<div class="cards">'+S.cases.map(function(c){var s=statusOf(c);
-    return '<a class="case" href="#/case/'+c.id+'"><div class="top"><span class="muted">№ '+esc(short(c.number))+'</span>'+(s.stamp?'':'<span class="st'+(s.hot?' hot':'')+'">'+s.st+'</span>')+'</div>'+
-      '<div class="art">'+esc(c.art)+'</div><div class="sub">'+s.sub+'</div>'+(s.act?'<div class="act">'+s.act+'</div>':'')+(s.stamp?'<span class="stamp">ОТМЕНЕНО</span>':'')+'</a>';}).join('')+'</div>'
+  var groups=[['Требуют действия',['ready','missed']],['В процессе',['filed','court']],['Завершённые',['cancelled','upheld']]];
+  var list=S.cases.length?groups.map(function(g){var cs=S.cases.filter(function(c){return g[1].indexOf(c.status)>=0;});
+      return cs.length?'<h2 class="group-h">'+g[0]+' · '+cs.length+'</h2><div class="cards grid">'+cs.map(caseCard).join('')+'</div>':'';}).join('')
     :'<div class="empty"><p class="serif" style="font-size:22px;font-weight:600">Здесь появятся ваши дела</p><p class="muted small" style="margin-top:6px">Загрузите первое постановление: обжалование бесплатное.</p>'+
       '<button type="button" class="link" data-action="seed">Показать демо-историю</button></div>';
-  return hdrCab('history')+'<main id="main" class="narrow has-tabs" style="padding-top:8px">'+
-    '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><h1 class="title">Мои дела</h1><a class="hdr-link" href="#/profile">'+fmt(S.balance)+' баллов</a></div>'+
-    '<a class="btn sm" style="margin:18px 0 24px" href="#/">'+I.plus+'Проверить новое постановление</a>'+list+'</main>'+tabbar('history');
+  var won=S.cases.filter(function(c){return c.status==='cancelled';}).length;
+  var saved=S.cases.filter(function(c){return c.status==='cancelled';}).reduce(function(a,c){return a+(c.strategy==='pay'?c.sum/2:c.sum);},0);
+  var active=S.cases.filter(function(c){return ['ready','missed','filed','court'].indexOf(c.status)>=0;}).length;
+  var side='<aside class="col-side desk-only"><a class="btn sm" href="#/">'+I.plus+'Новое постановление</a>'+
+    '<div class="side-card"><p class="small muted">Баланс</p><p class="serif" style="font-size:30px;font-weight:600;line-height:1.1">'+pts(S.balance)+'</p>'+
+    (S.freeCredits>0?'<p class="small"><b>+'+S.freeCredits+'</b> бесплатное обжалование за друзей</p>':'')+
+    '<p class="small muted">'+(hasWin()?'Следующее обжалование: 20% от штрафа, баллы спишутся первыми.':'Пока ни один штраф не отменён, обжалование бесплатное.')+'</p><a class="link small" style="min-height:32px" href="#/profile">История операций</a></div>'+
+    '<div class="side-card"><div class="mini-stats"><div><b>'+active+'</b><span>в работе</span></div><div><b>'+won+'</b><span>отменено</span></div><div><b>'+fmt(saved)+'\u00A0₽</b><span>сэкономлено</span></div></div></div>'+
+    '<div class="side-card"><b>Друзья: '+S.ref.invited.length+' из 3</b><p class="small muted">Три друга с постановлением дают одно бесплатное обжалование.</p><a class="link small" style="min-height:32px" href="#/referral">Пригласить</a></div></aside>';
+  return hdrCab('history')+'<main id="main" class="wide has-tabs" style="padding-top:8px"><div class="split main-first"><div class="col-main">'+
+    '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><h1 class="title">Мои дела</h1><a class="hdr-link mob-only" href="#/profile">'+pts(S.balance)+'</a></div>'+
+    '<a class="btn sm mob-only" style="margin:18px 0 0" href="#/">'+I.plus+'Проверить новое постановление</a><div style="margin-top:24px">'+list+'</div></div>'+side+'</div></main>'+tabbar('history');
 }
 
 function vProfile(){
   var ops=S.ops.length?S.ops.map(function(o){return '<li><span class="d">'+o.date+'</span><span style="display:flex;justify-content:space-between;gap:12px"><span>'+esc(o.text)+'</span><b style="white-space:nowrap">'+(o.amount>0?'+':'−')+fmt(Math.abs(o.amount))+'</b></span></li>';}).join(''):'<li><span class="d">—</span><span class="muted">Операций пока нет</span></li>';
   var u=S.user||{};
-  return hdrCab('profile')+'<main id="main" class="narrow has-tabs" style="padding-top:8px"><h1 class="title">Профиль</h1>'+
-    '<section class="sheet pad" style="margin-top:20px"><p class="small muted">Баланс</p><p class="serif" style="font-size:38px;font-weight:600;line-height:1.1;margin-top:2px">'+fmt(S.balance)+' баллов</p>'+
+  return hdrCab('profile')+'<main id="main" class="wide has-tabs" style="padding-top:8px"><h1 class="title">Профиль</h1><div class="split" style="margin-top:20px"><aside class="col-side">'+
+    '<section class="sheet pad"><p class="small muted">Баланс</p><p class="serif" style="font-size:38px;font-weight:600;line-height:1.1;margin-top:2px">'+pts(S.balance)+'</p>'+
     (S.freeCredits>0?'<p style="margin-top:6px;font-size:15px"><b>+'+S.freeCredits+'</b> бесплатное обжалование за друзей</p>':'')+
     '<p class="small muted" style="margin-top:8px">1 балл = 1 ₽. Баллы возвращаются, если суд оставил постановление в силе, и тратятся на следующее обжалование.</p>'+
-    '<details style="margin-top:8px"><summary class="link" style="list-style:none">История операций</summary><ol class="events" style="margin-top:6px">'+ops+'</ol></details></section>'+
-    '<section class="block stack" style="gap:16px"><h2 class="h3" style="margin:0">Данные</h2>'+
+    '<details style="margin-top:8px"><summary class="link" style="list-style:none">История операций</summary><ol class="events" style="margin-top:6px">'+ops+'</ol></details></section></aside>'+
+    '<div class="col-main" style="max-width:560px"><section class="block stack" style="gap:16px"><h2 class="h3" style="margin:0">Данные</h2>'+
     '<div class="field"><label for="pname">Имя</label><input id="pname" class="input md" type="text" autocomplete="name" placeholder="Как к вам обращаться" value="'+esc(u.name)+'" data-change="pname"></div>'+
     '<div class="field"><label for="ptel">Телефон</label><input id="ptel" class="input md" type="tel" readonly value="'+esc(u.phone)+'"></div>'+
     '<div class="field"><label for="pmail">Почта</label><input id="pmail" class="input md" type="email" autocomplete="email" placeholder="Пришлём копии документов" value="'+esc(u.email)+'" data-change="pmail"><p class="err" id="mailErr" hidden>Проверьте адрес: в нём должен быть символ @ и домен.</p></div></section>'+
     '<section class="block"><h2 class="h3">Уведомления в SMS</h2>'+
     '<label class="switch-row">Статус дела в суде<input type="checkbox" data-change="ncourt"'+(S.notify.court?' checked':'')+'></label>'+
     '<label class="switch-row">Напоминания о сроках<input type="checkbox" data-change="ndead"'+(S.notify.deadlines?' checked':'')+'></label></section>'+
-    '<section class="block"><p class="small muted">Загруженные постановления храним [N] дней, затем удаляем автоматически.</p><div class="stack" style="margin-top:8px">'+
+    '<section class="block"><p class="small muted">Загруженные постановления храним [N] дней, затем удаляем автоматически. Персональные данные обрабатываем в России по 152-ФЗ.</p><div class="stack" style="margin-top:8px">'+
     '<button type="button" class="link plain" data-action="demo">Демо-настройки</button>'+
     '<button type="button" class="link plain" data-action="logout">Выйти</button>'+
-    '<button type="button" class="link" data-action="delete">Удалить аккаунт и данные</button></div></section></main>'+tabbar('profile');
+    '<button type="button" class="link" data-action="delete">Удалить аккаунт и данные</button></div></section></div></div></main>'+tabbar('profile');
 }
 
 function vReferral(){
   var inv=S.ref.invited,slots='';
   for(var i=0;i<3;i++){slots+=inv[i]?'<div class="slot full">'+I.checkL+'<span>'+esc(inv[i].phone)+'</span></div>':'<div class="slot empty-slot">Ждём</div>';}
-  return hdrCab('referral')+'<main id="main" class="narrow has-tabs" style="padding-top:8px">'+
+  return hdrCab('referral')+'<main id="main" class="wide has-tabs" style="padding-top:8px"><div class="split main-first"><div class="col-main" style="max-width:600px">'+
     '<h1 class="title">Три друга: одно обжалование бесплатно</h1>'+
     '<p class="lead" style="font-size:15px">Друг засчитывается, когда зарегистрируется по вашей ссылке и загрузит своё постановление.</p>'+
-    '<section class="block"><div style="display:flex;justify-content:space-between;align-items:baseline"><b>Приглашено</b><span class="serif" style="font-size:24px;font-weight:600">'+inv.length+' из 3</span></div>'+slots+'</section>'+
+    '<section class="block"><div style="display:flex;justify-content:space-between;align-items:baseline"><b>Приглашено</b><span class="serif" style="font-size:24px;font-weight:600">'+inv.length+' из 3</span></div><div class="slots">'+slots+'</div></section>'+
     '<section class="block stack" style="gap:10px"><label for="ref" class="small" style="font-weight:600">Ваша ссылка</label>'+
     '<div style="display:flex;gap:8px"><input id="ref" class="input md" style="flex:1;min-width:0" type="text" readonly value="[домен]/r/K7M2Q"><button type="button" class="btn sm" style="width:auto" data-action="copy">Скопировать</button></div>'+
     '<button type="button" class="btn outline sm" data-action="share">Отправить в мессенджер</button></section>'+
-    '<p class="muted" style="margin-top:24px;font-size:15px">Получено бесплатных обжалований: <b style="color:var(--ink)">'+S.ref.earned+'</b></p>'+
-    '<details class="demo-box"><summary>Демо: приглашения</summary><div class="btns"><button type="button" class="btn outline sm" data-action="invite">Друг загрузил постановление</button></div></details></main>'+tabbar('referral');
+    '<p class="muted" style="margin-top:24px;font-size:15px">Получено бесплатных обжалований: <b style="color:var(--ink)">'+S.ref.earned+'</b>'+(S.freeCredits>0?'. Доступно сейчас: <b style="color:var(--ink)">'+S.freeCredits+'</b>':'')+'</p>'+
+    '<details class="demo-box"><summary>Демо: приглашения</summary><div class="btns"><button type="button" class="btn outline sm" data-action="invite">Друг загрузил постановление</button></div></details></div>'+
+    '<aside class="col-side"><div class="side-card" style="margin-top:32px"><h2 class="h3">Как это работает</h2>'+
+    numList(['Отправьте ссылку другу, у которого есть штраф с камеры.','Друг входит по ссылке и загружает своё постановление.','Когда засчитаем троих, вы получите одно бесплатное обжалование.'])+
+    '<p class="small muted" style="padding-top:12px;border-top:1px solid var(--line-soft)">Бесплатное обжалование пригодится после первой отмены: до неё обжалования и так бесплатны. Другу тоже выгодно: его первое обжалование бесплатное.</p></div></aside></div></main>'+tabbar('referral');
 }
 
 function vAbout(){
   var lawyer='<div style="display:flex;gap:14px;align-items:center;padding:14px;background:var(--sheet);border-radius:6px"><div style="width:64px;height:64px;flex-shrink:0;border-radius:4px;background:var(--disabled);display:grid;place-items:center;font-size:12px" class="muted">Фото</div><div><b>[ФИО юриста]</b><p class="small muted" style="margin-top:2px">[Специализация, стаж]</p></div></div>';
   var head=S.user?hdrCab('about'):hdrBack('На главную','#/');
-  return head+'<main id="main" class="narrow'+(S.user?' has-tabs':'')+'" style="padding-top:8px;padding-bottom:48px">'+
+  return head+'<main id="main" class="wide'+(S.user?' has-tabs':'')+'" style="padding-top:8px;padding-bottom:48px"><div class="split main-first"><div class="col-main">'+
     '<h1 class="title">О нас</h1><p class="lead">Готовим жалобы в суд на постановления с камер автофиксации. Шаблоны жалоб написали и проверили практикующие юристы.</p>'+
-    '<section class="block"><h2 class="h3">Юристы</h2><div class="stack" style="gap:10px">'+lawyer+lawyer+'</div></section>'+
-    '<section class="sheet pad" style="margin-top:28px"><h2 class="h3">Реквизиты</h2><dl class="kv" style="grid-template-columns:104px minmax(0,1fr)">'+
-    '<dt>Компания</dt><dd>[Наименование юрлица]</dd><dt>ИНН</dt><dd>[ИНН]</dd><dt>ОГРН</dt><dd>[ОГРН]</dd><dt>Адрес</dt><dd>[Юридический адрес]</dd>'+
-    '<dt>Почта</dt><dd><a href="mailto:hello@example.ru">[почта]</a></dd><dt>Оператор ПДн</dt><dd>Рег. № в реестре РКН [номер]</dd></dl></section>'+
+    '<section class="block"><h2 class="h3">Юристы</h2><div class="lawyers">'+lawyer+lawyer+'</div></section>'+
+    '<section class="block"><h2 class="h3">Как мы работаем</h2>'+numList(['Оцениваем шансы по фабуле дела и актуальной судебной практике. При низких шансах жалобу не готовим.','Собираем жалобу из шаблонов, которые составили и проверили юристы. Каждую жалобу с нуля юрист не пишет.','Жалобу подаёте вы, от своего имени. Мы консультируем и отслеживаем дело, но не представляем вас в суде.'])+'</section>'+
+    '<section class="block"><h2 class="h3">Как мы обращаемся с данными</h2>'+numList(['Персональные данные обрабатываются и хранятся в России по 152-ФЗ. Мы зарегистрированы как оператор ПДн в реестре РКН.','Постановление с персональными данными читает только модель GigaChat. Другие системы получают обезличенные данные.','Загруженные файлы храним [N] дней и удаляем автоматически. Аккаунт и все данные можно удалить в профиле.'])+'</section>'+
     '<section class="block"><h2 class="h3" style="margin-bottom:2px">Документы</h2><div class="stack">'+
     [['terms','Пользовательское соглашение'],['offer','Оферта'],['privacy','Политика обработки персональных данных'],['consent','Согласие на обработку персональных данных'],['cookies','Политика cookie']].map(function(d){return '<a class="link" style="font-weight:400" href="#/doc/'+d[0]+'">'+d[1]+'</a>';}).join('')+
-    '</div></section></main>'+(S.user?tabbar('about'):'');
+    '</div></section></div>'+
+    '<aside class="col-side"><section class="sheet pad" style="margin-top:28px"><h2 class="h3">Реквизиты</h2><dl class="kv" style="grid-template-columns:104px minmax(0,1fr)">'+
+    '<dt>Компания</dt><dd>[Наименование юрлица]</dd><dt>ИНН</dt><dd>[ИНН]</dd><dt>ОГРН</dt><dd>[ОГРН]</dd><dt>Адрес</dt><dd>[Юридический адрес]</dd>'+
+    '<dt>Почта</dt><dd><a href="mailto:hello@example.ru">[почта]</a></dd><dt>Оператор ПДн</dt><dd>Рег. № в реестре РКН [номер]</dd></dl></section></aside></div></main>'+(S.user?tabbar('about'):'');
 }
 
 var DOCS={terms:'Пользовательское соглашение',offer:'Оферта',privacy:'Политика обработки персональных данных',consent:'Согласие на обработку персональных данных',cookies:'Политика cookie',guide:'Как подать жалобу через ГАС «Правосудие»'};
@@ -658,7 +871,7 @@ function go(h){if(location.hash==='#'+h)route();else location.hash=h;}
 function startUpload(name,sample){if(sample)ui.retry=false;S.draft=mockDecree(name,sample);save();go('/analyzing');}
 function createCase(p){
   var d=S.draft;var id='c'+Date.now().toString(36);
-  var c={id:id,number:d.number,art:d.art,sum:d.sum,issued:d.issued,deadline:d.deadline,discountUntil:d.discountUntil,court:d.court,status:'ready',strategy:ui.strategy,free:p.free,fee:p.free?0:p.fee,paidPoints:p.free?0:p.pts,paidCard:p.free?0:p.toPay,restore:false,hearing:null,events:[{date:TODAY,text:'Жалоба подготовлена'}]};
+  var c={id:id,number:d.number,art:d.art,sum:d.sum,issued:d.issued,deadline:d.deadline,discountUntil:d.discountUntil,court:d.court,place:d.place,status:'ready',strategy:ui.strategy,free:p.free,fee:p.free?0:p.fee,paidPoints:p.free?0:p.pts,paidCard:p.free?0:p.toPay,restore:missed(d),hearing:null,events:[{date:TODAY,text:'Жалоба подготовлена'}]};
   if(p.reason==='credit')S.freeCredits--;
   if(!p.free&&p.pts>0){S.balance-=p.pts;S.ops.unshift({date:TODAY,text:'Оплата обжалования № '+short(c.number),amount:-p.pts});}
   S.cases.unshift(c);S.draft=null;save();if(dlg.open)dlg.close();go('/case/'+id);toast('Жалоба готова');
@@ -672,9 +885,10 @@ var actions={
   edit:function(){
     var d=S.draft;
     openDialog('<form class="dlg" data-submit="edit">'+dlgHead('Исправить данные')+
-      '<div class="field"><label for="enum">Номер постановления</label><input id="enum" class="input md" value="'+esc(d.number)+'" inputmode="numeric"></div>'+
-      '<div class="field"><label for="edate">Дата вынесения</label><input id="edate" class="input md" value="'+esc(d.issued)+'"></div>'+
-      '<div class="field"><label for="esum">Сумма штрафа, ₽</label><input id="esum" class="input md" value="'+d.sum+'" inputmode="numeric"></div>'+
+      '<div class="field"><label for="enum">Номер постановления</label><input id="enum" class="input md" value="'+esc(d.number)+'" inputmode="numeric" aria-describedby="enumErr"><p class="err" id="enumErr" hidden>Номер постановления состоит из 20 или 25 цифр. Проверьте его в постановлении.</p></div>'+
+      '<div class="field"><label for="edate">Дата вынесения</label><input id="edate" class="input md" value="'+esc(d.issued)+'" placeholder="ДД.ММ.ГГГГ" inputmode="numeric" aria-describedby="edateErr"><p class="err" id="edateErr" hidden>Укажите дату в формате ДД.ММ.ГГГГ, не позже сегодняшней.</p></div>'+
+      '<div class="field"><label for="esum">Сумма штрафа, ₽</label><input id="esum" class="input md" value="'+d.sum+'" inputmode="numeric" aria-describedby="esumErr"><p class="err" id="esumErr" hidden>Укажите сумму штрафа числом, например 1500.</p></div>'+
+      '<p class="small muted">Сроки обжалования и скидки пересчитаем по новой дате.</p>'+
       '<button class="btn" type="submit">Сохранить</button></form>');
   },
   appeal:function(){if(S.user)go('/checkout');else{ui.loginStep='phone';go('/login?next=/checkout');}},
@@ -686,7 +900,8 @@ var actions={
     openDialog('<div class="dlg">'+dlgHead(names[el.dataset.doc])+'<pre class="doc-pre">'+docText(el.dataset.doc,c)+'</pre><p class="small muted">Демо: в рабочей версии здесь будет PDF для скачивания.</p></div>');},
   zip:function(){toast('Демо: в рабочей версии скачается архив');},
   filed:function(el){var c=findCase(el.dataset.id);c.status='filed';c.events.unshift({date:TODAY,text:'Вы подали жалобу'});save();go('/case/'+c.id);toast('Найдём дело на сайте суда и пришлём статус');},
-  later:function(){go('/history');toast('Напомним за день до конца срока');},
+  later:function(){go('/history');toast(S.notify.deadlines?'Напомним в SMS за день до конца срока':'Напоминания о сроках выключены. Включите их в профиле');},
+  jump:function(el){var t=document.getElementById(el.dataset.target);if(t){t.setAttribute('tabindex','-1');t.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});t.focus({preventScroll:true});}},
   adv:function(el){var c=findCase(el.dataset.id);c.status='court';c.hearing='14 октября, 11:30';c.hearingShort='14.10.2026';
     c.events.unshift({date:TODAY,text:'Жалоба зарегистрирована в суде'});c.events.unshift({date:TODAY,text:'Назначено заседание на 14.10.2026'});save();rerender();toast('Статус обновлён');},
   win:function(el){var c=findCase(el.dataset.id);c.status='cancelled';c.decided=TODAY;c.events.unshift({date:TODAY,text:'Постановление отменено'});save();rerender();toast('Постановление отменено');},
@@ -719,7 +934,7 @@ document.addEventListener('change',function(e){var el=e.target;var k=el.dataset&
     if(!okType){S.draft=mockDecree(f.name);save();go('/guide');return;}startUpload(f.name,false);}
   else if(k==='consent'){ui.consent=el.checked;updatePhoneBtn();}
   else if(k==='strategy'){ui.strategy=el.value;rerender();var r=document.querySelector('input[name="strategy"][value="'+ui.strategy+'"]');if(r)r.focus();}
-  else if(k==='scenario'){S.scenario=el.value;save();document.querySelectorAll('#dlg .opt').forEach(function(o){o.classList.toggle('sel',o.querySelector('input').checked);});}
+  else if(k==='scenario'){S.scenario=el.value;ui.retry=false;save();document.querySelectorAll('#dlg .opt').forEach(function(o){o.classList.toggle('sel',o.querySelector('input').checked);});}
   else if(k==='pname'){S.user.name=el.value.trim();save();toast('Сохранено');}
   else if(k==='pmail'){var v=el.value.trim();var bad=v&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);document.getElementById('mailErr').hidden=!bad;el.setAttribute('aria-invalid',bad?'true':'false');if(!bad){S.user.email=v;save();toast('Сохранено');}}
   else if(k==='ncourt'){S.notify.court=el.checked;save();}
@@ -734,8 +949,11 @@ document.addEventListener('submit',function(e){var f=e.target;var k=f.dataset.su
   if(k==='phone'){if(ui.phone.replace(/\D/g,'').length!==11||!ui.consent)return;ui.loginStep='code';rerender();startResend();var c=document.getElementById('code');if(c)c.focus();toast('Код отправлен');}
   if(k==='code'){var code=document.getElementById('code').value;if(code.length!==4)return;
     S.user={phone:ui.phone,name:'',email:''};save();ui.loginStep='phone';go(f.dataset.next||'/history');toast('Вы вошли');}
-  if(k==='edit'){var d=S.draft;var n=document.getElementById('enum').value.replace(/\D/g,'');var s=parseInt(document.getElementById('esum').value.replace(/\D/g,''),10);
-    if(n)d.number=n;d.issued=document.getElementById('edate').value.trim()||d.issued;if(s>0)d.sum=s;save();dlg.close();rerender();toast('Данные обновлены');}
+  if(k==='edit'){var d=S.draft;var n=document.getElementById('enum').value.replace(/\D/g,'');var sum=parseInt(document.getElementById('esum').value.replace(/\s/g,''),10);var dt=document.getElementById('edate').value.trim();
+    var bad={enum:!(n.length===20||n.length===25),edate:!validD(dt),esum:!(sum>0&&/^\d+$/.test(document.getElementById('esum').value.replace(/\s/g,'')))};
+    var first=null;Object.keys(bad).forEach(function(id){document.getElementById(id+'Err').hidden=!bad[id];document.getElementById(id).setAttribute('aria-invalid',bad[id]?'true':'false');if(bad[id]&&!first)first=id;});
+    if(first){document.getElementById(first).focus();return;}
+    d.number=n;d.issued=dt;d.sum=sum;withTerms(d);save();dlg.close();rerender();toast('Данные обновлены');}
 });
 
 /* ---------- router ---------- */
