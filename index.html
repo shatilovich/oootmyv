@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>[Название]: обжалование штрафов с камер</title>
+<title>Оспорим: обжалование штрафов с камер</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='145.5 492 225 225' role='img' aria-label='%D0%9E%D1%81%D0%BF%D0%BE%D1%80%D0%B8%D0%BC'%3E%3Ctitle%3E%D0%9E%D1%81%D0%BF%D0%BE%D1%80%D0%B8%D0%BC%3C/title%3E%3Cpath fill='#A4E35E' d='M201.75 539.18L314.25 499.46Q335 492.14 335 514.14L335 640.64Q335 662.64 314.25 669.96L201.75 709.68Q181 717 181 695L181 568.5Q181 546.5 201.75 539.18Z'/%3E%3Cpath fill='none' stroke='#11261F' stroke-width='34' stroke-linecap='round' stroke-linejoin='round' d='M225 617L252 650L316 570'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
@@ -44,8 +45,9 @@ p{margin:0}
 
 /* header */
 .hdr{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--ground);display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 20px;min-height:60px}
-.logo{font-family:Spectral,Georgia,serif;font-weight:700;font-size:21px;color:var(--ink);text-decoration:none}
+.logo{display:inline-flex;align-items:center;min-height:44px;color:var(--ink);text-decoration:none}
 .logo:hover{color:var(--ink)}
+.logo svg{display:block;height:30px;width:auto}
 .hdr-link{display:inline-flex;align-items:center;min-height:44px;color:var(--ink);font-size:15px;font-weight:600;text-decoration:none}
 .hdr-link:hover{color:var(--accent)}
 .back{display:inline-flex;align-items:center;gap:4px;min-height:44px;margin-left:-8px;padding:0 8px;color:var(--ink);text-decoration:none;font-size:15px}
@@ -406,7 +408,8 @@ function price(strategy){
 }
 
 /* ---------- shared pieces ---------- */
-var LOGO='<a class="logo" href="#/">[Название]</a>';
+var LOGO_SVG='<svg viewBox="181 492 904 225" aria-hidden="true" focusable="false"><path fill="#A4E35E" d="M201.75 539.18L314.25 499.46Q335 492.14 335 514.14L335 640.64Q335 662.64 314.25 669.96L201.75 709.68Q181 717 181 695L181 568.5Q181 546.5 201.75 539.18Z"/><path fill="none" stroke="#11261F" stroke-width="34" stroke-linecap="round" stroke-linejoin="round" d="M225 617L252 650L316 570"/><path fill="currentColor" d="M378.5 610A48.5 47.5 0 1 1 475.5 610A48.5 47.5 0 1 1 378.5 610ZM404 610A23 23 0 1 0 450 610A23 23 0 1 0 404 610Z M573.89 596A47.5 47.5 0 1 0 574.46 622L548.97 622A24 23 0 1 1 547.54 596Z M580 655V565H651Q665 565 665 579V655H641V587H604V655Z M671.5 610A48.5 47.5 0 1 1 768.5 610A48.5 47.5 0 1 1 671.5 610ZM697 610A23 23 0 1 0 743 610A23 23 0 1 0 697 610Z M776 694V565H800V694ZM775 610A48.5 47.5 0 1 1 872 610A48.5 47.5 0 1 1 775 610ZM800.5 610A23 23 0 1 0 846.5 610A23 23 0 1 0 800.5 610Z M879 655V565H903V655Z M943 655V565H967V655Z M903 618 L943 565 L943 600.67 L903 654Z M977 655V565H1001L1031 608L1061 565H1085V655H1061V604L1042 636Q1031 652 1020 636L1001 604V655Z"/></svg>';
+var LOGO='<a class="logo" href="#/" aria-label="Оспорим, на главную">'+LOGO_SVG+'</a>';
 function userLink(){return S.user?'<a class="hdr-link" href="#/history">Мои дела</a>':'<a class="hdr-link" href="#/login?next=/history">Войти</a>';}
 function hdrLogo(right){
   if(right===undefined)right=userLink();
@@ -518,7 +521,7 @@ function vLanding(){
 }
 function footer(){
   return '<footer class="site"><div class="foot-cols">'+
-    '<div><p class="logo" style="font-size:19px">[Название]</p><p class="small muted" style="margin-top:8px;max-width:30em">Готовим жалобы в суд на постановления с камер автофиксации. Услуга оказывается в форме юридической консультации по <a href="#/doc/offer">оферте</a>.</p>'+
+    '<div><p class="logo" role="img" aria-label="Оспорим">'+LOGO_SVG+'</p><p class="small muted" style="margin-top:8px;max-width:30em">Готовим жалобы в суд на постановления с камер автофиксации. Услуга оказывается в форме юридической консультации по <a href="#/doc/offer">оферте</a>.</p>'+
       '<p class="tiny muted" style="margin-top:12px">[Юрлицо] · ИНН [ИНН] · ОГРН [ОГРН]<br>Оператор ПДн, рег. № [номер] в реестре РКН</p></div>'+
     '<div><h3>Сервис</h3><div class="stack"><a class="link plain" href="#/about">О нас и реквизиты</a><a class="link plain" href="#/doc/guide">Как подать жалобу</a>'+(S.user?'<a class="link plain" href="#/referral">Пригласить друзей</a>':'')+'<button type="button" class="link plain" data-action="demo">Демо-настройки</button></div></div>'+
     '<div><h3>Документы</h3><div class="stack"><a class="link plain" href="#/doc/terms">Пользовательское соглашение</a><a class="link plain" href="#/doc/offer">Оферта</a><a class="link plain" href="#/doc/privacy">Политика обработки ПДн</a><a class="link plain" href="#/doc/cookies">Политика cookie</a></div></div>'+
@@ -917,7 +920,7 @@ var actions={
     function fallback(){inp.focus();inp.select();toast('Ссылка выделена, скопируйте её');}
     try{if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(v).then(function(){toast('Ссылка скопирована');},fallback);else fallback();}catch(e){fallback();}},
   share:function(){var v=document.getElementById('ref').value;
-    if(navigator.share){navigator.share({title:'[Название]',text:'Обжалую штрафы с камер через этот сервис',url:'https://'+v}).catch(function(){});}else actions.copy();},
+    if(navigator.share){navigator.share({title:'Оспорим',text:'Обжалую штрафы с камер через этот сервис',url:'https://'+v}).catch(function(){});}else actions.copy();},
   invite:function(){var n=String(Math.floor(10+Math.random()*89));S.ref.invited.push({phone:'+7 ••• •• '+n+' '+String(Math.floor(10+Math.random()*89)),date:TODAY});
     if(S.ref.invited.length>=3){S.ref.invited=[];S.ref.earned++;S.freeCredits++;toast('Три друга с нами: одно обжалование бесплатно');}else toast('Друг засчитан');
     save();rerender();},
@@ -987,7 +990,7 @@ function route(){
   var html=build();
   if(html==null){location.replace('#/');return;}
   $app.innerHTML=html+cookieBar();
-  document.title='[Название]: '+(TITLES[view]||'');
+  document.title='Оспорим: '+(TITLES[view]||'');
   window.scrollTo(0,0);
   var h1=$app.querySelector('h1');if(h1&&view!=='home'){h1.setAttribute('tabindex','-1');h1.focus({preventScroll:true});}
   if(view==='analyzing')runAnalyzing();
