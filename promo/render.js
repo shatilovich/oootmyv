@@ -1,5 +1,6 @@
 // Renders promo.html frame by frame and encodes MP4.
-// Usage: node render.js [out.mp4] [fps]   |   node render.js --stills t1,t2,...
+// Usage: node render.js [out.mp4] [fps]   |   node render.js --stills t1,t2,... [dir]
+// AR=16x9 renders the horizontal layout (1920x1080); default is 9:16.
 const { chromium } = require('playwright');
 const { spawn } = require('child_process');
 const path = require('path');
@@ -8,8 +9,9 @@ const FFMPEG = process.env.FFMPEG || 'ffmpeg';
 (async () => {
   const args = process.argv.slice(2);
   const browser = await chromium.launch();
-  const page = await browser.newPage({ viewport: { width: 1080, height: 1920 } });
-  await page.goto('file://' + path.join(__dirname, 'promo.html') + '?render=1');
+  const wide = process.env.AR === '16x9';
+  const page = await browser.newPage({ viewport: wide ? { width: 1920, height: 1080 } : { width: 1080, height: 1920 } });
+  await page.goto('file://' + path.join(__dirname, 'promo.html') + '?render=1' + (wide ? '&ar=16x9' : ''));
   await page.evaluate(() => document.fonts.ready);
 
   if (args[0] === '--stills') {
