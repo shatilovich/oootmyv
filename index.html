@@ -313,6 +313,109 @@ dialog::backdrop{background:var(--backdrop)}
   .land-sec{padding-top:88px}
   .title{font-size:44px}
 }
+
+/* landing: proof, calc, compare */
+.hero-sheet{position:relative;margin-bottom:56px}
+.hero-sheet .doc{z-index:1}
+.slip{position:absolute;right:12px;bottom:-62px;z-index:0;width:240px;height:130px;padding:0 14px 14px;display:flex;align-items:flex-end;justify-content:space-between;gap:10px;background:var(--sheet);border-radius:3px;transform:rotate(3.5deg);box-shadow:0 1px 0 var(--line),0 14px 24px -14px var(--shadow)}
+.slip p{font-size:13px;line-height:1.3;padding-bottom:5px;white-space:nowrap}
+.slip .stamp{position:static;flex:none;font-size:14px;animation:stampin .35s 1.9s cubic-bezier(.2,1.6,.4,1) backwards}
+@keyframes stampin{from{opacity:0;transform:rotate(-7deg) scale(1.8)}}
+.proof{display:grid;grid-template-columns:minmax(0,1fr);gap:28px;align-items:start}
+.big-num{font-family:Spectral,Georgia,serif;font-weight:600;font-size:56px;line-height:1;letter-spacing:-.02em}
+.big-num small{display:block;margin-top:10px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;font-weight:600;letter-spacing:0}
+.proof-sub{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+.proof-sub b{display:block;font-family:Spectral,Georgia,serif;font-size:26px;line-height:1.1}
+.proof-sub span{font-size:14px;color:var(--muted)}
+.ledger{position:relative;height:348px;overflow:hidden;background:var(--sheet);border-radius:6px}
+.ledger::before,.ledger::after{content:"";position:absolute;left:0;right:0;z-index:1;height:44px;pointer-events:none}
+.ledger::before{top:0;background:linear-gradient(var(--sheet),transparent)}
+.ledger::after{bottom:0;background:linear-gradient(transparent,var(--sheet))}
+.ledger-h{position:absolute;left:0;right:0;top:0;z-index:2;display:flex;justify-content:space-between;padding:12px 18px;background:var(--sheet);border-bottom:1px solid var(--line-soft);font-size:13px;color:var(--muted)}
+.ledger-h b{color:var(--ink)}
+.ledger ul{list-style:none;margin:0;padding:44px 0 0;animation:roll 28s linear infinite}
+.ledger:hover ul{animation-play-state:paused}
+@keyframes roll{to{transform:translateY(-50%)}}
+.ledger li{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 12px;padding:12px 18px;border-bottom:1px solid var(--line-soft)}
+.ledger .l1{font-size:15px;font-weight:600}
+.ledger .l2{font-size:13px;color:var(--muted)}
+.ledger .res{grid-row:span 2;padding:3px 8px;border:1.5px solid var(--accent);border-radius:3px;color:var(--accent);font-family:Spectral,Georgia,serif;font-weight:700;font-size:13px;letter-spacing:.06em;transform:rotate(-4deg)}
+.ledger .res.back{border-color:var(--field);color:var(--muted);font-family:system-ui,-apple-system,sans-serif;font-weight:600;letter-spacing:0;transform:none}
+.calc2{display:grid;grid-template-columns:minmax(0,1fr);gap:28px;align-items:start}
+.ctl-l{margin:0 0 8px;font-size:14px;font-weight:600}
+.ctl{border:0;margin:0 0 22px;padding:0;min-width:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label,.tog label{position:relative;display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:6px;background:var(--sheet);font-size:15px;cursor:pointer;font-variant-numeric:tabular-nums}
+.chips input,.tog input{position:absolute;opacity:0;width:1px;height:1px}
+.chips label:has(:checked),.tog label:has(:checked){border:1.5px solid var(--ink);background:var(--ink);color:var(--ground)}
+.chips label:has(:focus-visible),.tog label:has(:focus-visible){outline:2px solid var(--ink);outline-offset:2px}
+.tog{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.tog label{text-align:center;line-height:1.2;padding:8px 10px}
+.receipt{position:relative;padding:22px 20px 26px;background:var(--sheet);border-radius:3px 3px 0 0;font-variant-numeric:tabular-nums;box-shadow:0 18px 30px -22px var(--shadow)}
+.receipt::after{content:"";position:absolute;left:0;right:0;bottom:-10px;height:10px;background:linear-gradient(135deg,var(--sheet) 50%,transparent 50%) 0 0/14px 10px repeat-x,linear-gradient(-135deg,var(--sheet) 50%,transparent 50%) 0 0/14px 10px repeat-x}
+.receipt .rl{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:7px 0;font-size:15px}
+.receipt .rl span:first-child{color:var(--muted)}
+.receipt hr{border:0;border-top:1.5px dashed var(--line);margin:10px 0}
+.receipt .gain{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:4px}
+.receipt .gain b{font-family:Spectral,Georgia,serif;font-size:40px;line-height:1;font-weight:600}
+.bar{display:flex;height:10px;margin:16px 0 8px;border-radius:2px;overflow:hidden;background:var(--line)}
+.bar i{display:block;height:100%;transition:width .3s ease}
+.bar .g{background:var(--ink)} .bar .f{background:var(--accent)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.cmp{width:100%;border-collapse:collapse;font-size:15px}
+.cmp caption{text-align:left}
+.cmp th,.cmp td{padding:14px 12px 14px 0;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+.cmp thead th{font-size:13px;font-weight:600;color:var(--muted)}
+.cmp thead th.us{color:var(--ink)}
+.cmp tbody th{font-weight:600}
+.cmp td.us{font-weight:600}
+.voices{display:grid;grid-template-columns:minmax(0,1fr);gap:32px;align-items:start}
+.sms{padding:18px;background:var(--sheet);border-radius:14px;display:flex;flex-direction:column;gap:10px;max-width:380px}
+.sms-h{display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:1px solid var(--line-soft);font-size:14px;font-weight:600}
+.sms-h svg{width:28px;height:28px;flex:none}
+.sms .d{align-self:center;font-size:12px;color:var(--muted)}
+.sms .m{align-self:flex-start;max-width:88%;padding:10px 12px;border-radius:14px 14px 14px 4px;background:var(--ground);font-size:14px;line-height:1.4}
+.sms .m.win{background:var(--ink);color:var(--ground)}
+.quotes{display:flex;flex-direction:column;gap:26px}
+.quote p.q{font-family:Spectral,Georgia,serif;font-size:21px;line-height:1.35}
+.quote.lead-q p.q{font-size:23px;line-height:1.3}
+.quote .who{margin-top:10px;font-size:14px;color:var(--muted)}
+.quote .who b{color:var(--ink);font-weight:600}
+.rating{display:flex;align-items:center;gap:10px;margin-top:6px;font-size:14px;color:var(--muted)}
+.rating b{font-family:Spectral,Georgia,serif;font-size:22px;color:var(--ink)}
+.seal-row{display:flex;align-items:center;gap:18px;margin:4px 0 18px}
+.seal-row p{font-size:15px;color:var(--muted);max-width:18em}
+.seal-row b{display:block;color:var(--ink);font-size:17px;margin-bottom:4px}
+.seal{width:132px;height:132px;flex:none;color:var(--accent);transform:rotate(-8deg)}
+.seal text{font:700 10.5px/1 system-ui,-apple-system,sans-serif;letter-spacing:.18em;fill:currentColor}
+.seal .c1{font-family:Spectral,Georgia,serif;font-size:26px;letter-spacing:0}
+.seal .c2{font-size:9px;letter-spacing:.08em}
+.land-cta{position:fixed;left:0;right:0;bottom:0;z-index:15;padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));background:var(--ground);border-top:1px solid var(--line);transform:translateY(110%);transition:transform .25s ease}
+.land-cta.show{transform:none}
+.land-cta p{margin-top:6px;text-align:center}
+@media (max-width:899px){
+  .land-cta ~ .cookie{bottom:calc(112px + env(safe-area-inset-bottom,0px))}
+  .cmp thead{display:none}
+  .cmp,.cmp tbody,.cmp tr,.cmp th,.cmp td{display:block}
+  .cmp tr{padding:14px 0;border-bottom:1px solid var(--line)}
+  .cmp th,.cmp td{padding:3px 0;border:0}
+  .cmp tbody th{margin-bottom:6px;font-size:16px}
+  .cmp td{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;font-size:14px}
+  .cmp td::before{content:attr(data-l);color:var(--muted);font-weight:400}
+}
+@media (min-width:900px){
+  .land-cta{display:none}
+  .hero-sheet{margin-bottom:0}
+  .slip{right:-24px;bottom:-54px;width:260px}
+  .proof{grid-template-columns:minmax(0,.9fr) minmax(0,1fr);column-gap:72px}
+  .big-num{font-size:84px}
+  .calc2{grid-template-columns:minmax(0,1fr) 400px;column-gap:72px}
+  .voices{grid-template-columns:380px minmax(0,1fr);column-gap:72px}
+  .quotes{padding-top:4px}
+  .quote.lead-q p.q{font-size:28px;line-height:1.25}
+}
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition:none!important}
 }
@@ -349,7 +452,7 @@ function fresh(){return {v:1,scenario:'high',user:null,balance:0,freeCredits:0,c
 function load(){try{var r=localStorage.getItem(KEY);if(r){var s=JSON.parse(r);if(s&&s.v===1)return s;}}catch(e){}return fresh();}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 var S=load();
-var ui={loginStep:'phone',phone:'',consent:false,code:'',resend:45,strategy:'pay'};
+var ui={loginStep:'phone',phone:'',consent:false,code:'',resend:45,strategy:'pay',calc:{sum:3000,first:'1',pay:'1'}};
 var timers=[];
 function later(fn,ms){timers.push(setTimeout(fn,ms));}
 function every(fn,ms){timers.push(setInterval(fn,ms));}
@@ -418,7 +521,7 @@ function hdrLogo(right){
   return '<header class="hdr">'+LOGO+right+'</header>';
 }
 function hdrLanding(){
-  var nav=[['how','Как это работает'],['price','Стоимость'],['faq','Вопросы']].map(function(x){return '<a href="#/" data-action="jump" data-target="'+x[0]+'">'+x[1]+'</a>';}).join('')+'<a href="#/about">О нас</a>';
+  var nav=[['how','Как это работает'],['proof','Результаты'],['price','Стоимость'],['faq','Вопросы']].map(function(x){return '<a href="#/" data-action="jump" data-target="'+x[0]+'">'+x[1]+'</a>';}).join('')+'<a href="#/about">О нас</a>';
   return '<header class="hdr"><div class="hdr-l">'+LOGO+'<nav class="desk-nav" aria-label="Разделы страницы">'+nav+'</nav></div>'+userLink()+'</header>';
 }
 function hdrBack(label,to,noUser){
@@ -470,7 +573,8 @@ function vLanding(){
       '<p class="tiny muted">по делу об административном правонарушении</p>'+
       '<dl class="kv"><dt>Дата</dt><dd>17.09.2026</dd><dt>Статья</dt><dd>ч. 5 ст. 12.16 КоАП РФ</dd><dt>Место</dt><dd>[адрес камеры]</dd><dt>Штраф</dt><dd><span class="circled">3&nbsp;000&nbsp;₽<svg viewBox="0 0 112 48" preserveAspectRatio="none" fill="none" aria-hidden="true"><path class="ink-draw" d="M60 6 C 94 4, 110 14, 106 26 C 102 40, 62 44, 30 41 C 8 38, 2 26, 10 16 C 18 7, 42 3, 70 5" stroke="currentColor" style="color:var(--accent)" stroke-width="2" stroke-linecap="round" pathLength="1"/></svg></span>'+
       '<div class="margin-note"><svg width="34" height="26" viewBox="0 0 34 26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 23 C 22 23, 10 17, 6 4"/><path d="M2 9 L6 3 L11 8"/></svg><span>можно оспорить</span></div></dd></dl>'+
-    '</div></div>'+
+    '</div>'+
+    '<div class="slip"><p class="muted">Решение суда</p><span class="stamp">ОТМЕНЕНО</span></div></div>'+
     '<div class="hero-upload">'+uploadBtn('file')+
       '<p class="small muted center">PDF, фото или скриншот. Шансы покажем без регистрации.</p>'+
       '<div class="center"><button type="button" class="link" data-action="sample">Попробовать на примере</button></div>'+
@@ -480,7 +584,7 @@ function vLanding(){
         '<li>'+I.check+'<span>Подаёте от своего имени, в суд ходить не нужно</span></li>'+
         '<li>'+I.check+'<span>Не отменили: следующее обжалование за наш счёт</span></li></ul>'+
     '</div>'+
-  '</section>'+
+  '</section>'+proofSec()+
   '<section class="land-sec" id="how"><h2 class="h2">Как это работает</h2><ol class="how">'+
     '<li><span class="n" aria-hidden="true">1</span><div><b>Оценка шансов</b><span>Смотрим фабулу дела и свежую практику судов. Если шансы низкие, скажем честно и не возьмём денег.</span></div></li>'+
     '<li><span class="n" aria-hidden="true">2</span><div><b>Жалоба по шаблону юристов</b><span>Собираем жалобу и ходатайства из шаблонов, которые написали и проверили практикующие юристы. Суд определяем по месту камеры.</span></div></li>'+
@@ -492,13 +596,14 @@ function vLanding(){
     '<div class="pack-item">'+I.file+'<div><b>Ходатайство о восстановлении срока</b><span>Если 10 дней на обжалование уже прошли.</span></div></div>'+
     '<div class="pack-item">'+I.info+'<div><b>Инструкция и отслеживание</b><span>Куда и как подать через ГАС «Правосудие». Статус дела с сайта суда и напоминания о сроках.</span></div></div>'+
   '</div></section>'+
+  calcSec()+compareSec()+voicesSec()+
   '<section class="land-sec"><h2 class="h2">Сроки, о которых важно знать</h2><div class="facts">'+
     '<div class="fact"><div class="v">10 дней</div><p>На подачу жалобы после получения постановления. Напомним заранее.</p></div>'+
     '<div class="fact"><div class="v">20 дней</div><p>Действует скидка 50% на оплату штрафа с даты постановления. Её можно использовать и при обжаловании.</p></div>'+
     '<div class="fact"><div class="v">Пропустили?</div><p>Подготовим ходатайство о восстановлении срока. Решение о восстановлении принимает суд.</p></div>'+
   '</div></section>'+
   '<div class="land-grid">'+
-  '<section class="land-sec" id="price"><h2 class="h2">Сколько стоит</h2><div class="rows">'+
+  '<section class="land-sec" id="price"><h2 class="h2">Сколько стоит</h2><div class="seal-row">'+SEAL+'<p><b>Без риска для вас</b>Не отменили: вернём всю сумму баллами на следующее обжалование.</p></div><div class="rows">'+
     '<div class="row"><span>Пока ни один штраф не отменён</span><span class="price-val">Бесплатно</span></div>'+
     '<div class="row"><span>После первой отмены</span><span class="price-val">20% от штрафа</span></div>'+
     '<div class="row"><span>Если суд откажет</span><span class="price-val">Вернём баллами</span></div></div>'+
@@ -519,7 +624,104 @@ function vLanding(){
   '</div></section>'+
   '<section class="band"><div><h2 class="h2">Проверьте шансы по своему постановлению</h2><p style="margin-top:8px">Без регистрации. Регистрация понадобится, только если решите обжаловать.</p></div>'+
     '<div class="stack" style="gap:8px">'+uploadBtn('file2')+'</div></section>'+
-  '</div></main>'+footer();
+  '</div></main>'+footer()+
+  '<div class="land-cta" id="landCta" aria-hidden="true"><label class="btn" for="file">'+I.upload+'Проверить шансы</label><p class="tiny muted">Бесплатно и без регистрации</p></div>';
+}
+/* Соцдоказательства. В квадратных скобках — заглушки: до запуска заменить реальными цифрами из базы дел.
+   Строки реестра — пример формата (обезличенные решения, публичные данные сайтов судов).
+   Отзывы — только реальные, с согласия авторов: выдуманные отзывы запрещены законом «О рекламе». */
+var PROOF={cancelled:'[1 240]',saved:'[3,1 млн ₽]',share:'[7 из 10]',rating:'[4,9]',ratings:'[320]'};
+var LEDGER=[
+  ['24.09','Москва','ч. 5 ст. 12.16','3\u00A0000\u00A0₽','win'],
+  ['24.09','Казань','ч. 3 ст. 12.9','2\u00A0000\u00A0₽','win'],
+  ['23.09','Москва','ч. 1 ст. 12.12','1\u00A0000\u00A0₽','win'],
+  ['23.09','Санкт-Петербург','ч. 1.1 ст. 12.17','1\u00A0500\u00A0₽','back'],
+  ['22.09','Москва','ч. 2 ст. 12.9','500 ₽','win'],
+  ['22.09','Екатеринбург','ч. 5 ст. 12.16','3\u00A0000\u00A0₽','win'],
+  ['21.09','Новосибирск','ч. 3 ст. 12.9','2\u00A0000\u00A0₽','win'],
+  ['20.09','Москва','ч. 4 ст. 12.16','1\u00A0500\u00A0₽','win']
+];
+function proofSec(){
+  var rows=function(hidden){return LEDGER.map(function(r){
+    return '<li'+(hidden?' aria-hidden="true"':'')+'><span class="l1">'+r[2]+' КоАП · '+r[3]+'</span>'+
+      (r[4]==='win'?'<span class="res">ОТМЕНЕНО</span>':'<span class="res back">Отказ · баллы вернули</span>')+
+      '<span class="l2">'+r[1]+' · решение от '+r[0]+'</span></li>';}).join('');};
+  return '<section class="land-sec" id="proof"><div class="proof">'+
+    '<div><h2 class="h2">Результаты</h2><p class="big-num">'+PROOF.cancelled+'<small>постановлений с камер уже отменили суды</small></p>'+
+      '<p class="muted" style="margin-top:14px;font-size:15px;max-width:30em">Каждое решение опубликовано на сайте суда. Показываем все исходы, в том числе отказы: по ним мы возвращаем деньги.</p>'+
+      '<div class="proof-sub"><div><b>'+PROOF.saved+'</b><span>не заплатили водители по отменённым штрафам</span></div>'+
+      '<div><b>'+PROOF.share+'</b><span>жалоб с высокими шансами суды удовлетворяют</span></div></div></div>'+
+    '<div class="ledger" role="region" aria-label="Последние решения судов"><div class="ledger-h"><b>Последние решения</b><span>обновляется ежедневно</span></div>'+
+      '<ul>'+rows(false)+rows(true)+'</ul></div>'+
+  '</div></section>';
+}
+var CALC_SUMS=[500,1000,1500,2000,3000,5000];
+function calcSec(){
+  var c=ui.calc;
+  var radio=function(name,val,label,cur){return '<label><input type="radio" name="'+name+'" value="'+val+'" data-change="calc"'+(String(cur)===String(val)?' checked':'')+'>'+label+'</label>';};
+  return '<section class="land-sec" id="calc"><h2 class="h2">Посчитайте, сколько сэкономите</h2><div class="calc2"><div>'+
+    '<fieldset class="ctl"><legend class="ctl-l">Сумма штрафа</legend><div class="chips">'+CALC_SUMS.map(function(v){return radio('csum',v,rub(v),c.sum);}).join('')+'</div></fieldset>'+
+    '<fieldset class="ctl"><legend class="ctl-l">Что делаете со штрафом</legend><div class="tog">'+radio('cpay','1','Плачу со скидкой 50%',c.pay)+radio('cpay','0','Не плачу до решения суда',c.pay)+'</div></fieldset>'+
+    '<fieldset class="ctl"><legend class="ctl-l">Обжаловали с нами раньше?</legend><div class="tog">'+radio('cfirst','1','Нет, первый раз',c.first)+radio('cfirst','0','Да, уже отменяли',c.first)+'</div></fieldset>'+
+    '</div><div id="calcOut" aria-live="polite">'+calcOut()+'</div></div></section>';
+}
+function calcOut(){
+  var c=ui.calc,pay=c.pay==='1',first=c.first==='1';
+  var base=pay?c.sum/2:c.sum,fee=first?0:Math.round(base*0.2),gain=base-fee;
+  var fp=Math.round(fee/base*100);
+  return '<div class="receipt"><p class="h3">Расчёт по штрафу '+rub(c.sum)+'</p>'+
+    '<div class="rl"><span>'+(pay?'Платите сейчас со скидкой':'Сейчас не платите')+'</span><span>'+rub(pay?base:0)+'</span></div>'+
+    '<div class="rl"><span>Обжалование в Оспорим</span><span>'+(fee?rub(fee):'<b>Бесплатно</b>')+'</span></div>'+
+    '<hr><div class="rl"><span>Если суд отменит</span><span>'+(pay?'вернут '+rub(base):'не платите '+rub(base))+'</span></div>'+
+    '<div class="gain"><span class="muted">Ваша выгода</span><b>'+rub(gain)+'</b></div>'+
+    '<div class="bar" aria-hidden="true"><i class="g" style="width:'+(100-fp)+'%"></i><i class="f" style="width:'+fp+'%"></i></div>'+
+    '<div class="legend"><span><i style="background:var(--ink)"></i>остаётся у вас</span>'+(fee?'<span><i style="background:var(--accent)"></i>наша работа</span>':'')+'</div>'+
+    '<hr><p class="small muted">Если суд откажет: '+(fee?fmt(fee)+' '+plural(fee,'балл','балла','баллов')+' вернутся на счёт, следующее обжалование за наш счёт.':'вы ничего не теряете.')+
+    (pay?'':' Скидка 50% действует 20 дней с даты постановления: при отказе суда она может сгореть.')+'</p></div>';
+}
+function compareSec(){
+  var cols=['Оспорим','Юрист','Сами'];
+  var rows=[
+    ['Стоимость','Первое обжалование бесплатно, дальше 20% от штрафа','От [5\u00A0000]\u00A0₽, даже если штраф 1\u00A0500\u00A0₽','Бесплатно'],
+    ['Время','Около 10 минут','От 1–3 дней на встречу и подготовку','Вечер-два на КоАП и практику'],
+    ['Оценка шансов','По свежей практике судов, до оплаты','По опыту юриста','Нет'],
+    ['Если суд откажет','Вернём всю сумму баллами','Деньги не вернут','Время не вернуть'],
+    ['Статус дела','SMS о каждом шаге','По запросу','Следить на сайте суда']
+  ];
+  return '<section class="land-sec"><h2 class="h2">Почему не юрист и не самому</h2><table class="cmp"><caption class="sr-only">Сравнение способов обжалования</caption>'+
+    '<thead><tr><th scope="col"><span class="sr-only">Критерий</span></th>'+cols.map(function(c,i){return '<th scope="col"'+(i===0?' class="us"':'')+'>'+c+'</th>';}).join('')+'</tr></thead><tbody>'+
+    rows.map(function(r){return '<tr><th scope="row">'+r[0]+'</th>'+r.slice(1).map(function(v,i){return '<td data-l="'+cols[i]+'"'+(i===0?' class="us"':'')+'>'+v+'</td>';}).join('')+'</tr>';}).join('')+
+    '</tbody></table></section>';
+}
+var MARK_SVG='<svg viewBox="145.5 492 225 225" aria-hidden="true"><path fill="#A4E35E" d="M201.75 539.18L314.25 499.46Q335 492.14 335 514.14L335 640.64Q335 662.64 314.25 669.96L201.75 709.68Q181 717 181 695L181 568.5Q181 546.5 201.75 539.18Z"/><path fill="none" stroke="#11261F" stroke-width="34" stroke-linecap="round" stroke-linejoin="round" d="M225 617L252 650L316 570"/></svg>';
+function voicesSec(){
+  var q=[
+    ['Штраф за выделенку, хотя я поворачивал направо. Загрузил PDF из Госуслуг, через десять минут жалоба была готова. Через месяц пришла SMS: отменено.','[Имя Ф.], [город]','ч. 1.1 ст. 12.17 · 1\u00A0500\u00A0₽ отменён'],
+    ['Думал, придётся ехать в суд. Не пришлось ни разу: решение пришло почтой, а сервис сообщил о нём на неделю раньше.','[Имя Ф.], [город]','ч. 3 ст. 12.9 · 2\u00A0000\u00A0₽ отменён'],
+    ['Первый раз суд отказал, но баллы вернули полностью. На них обжаловал следующий штраф, и его уже отменили.','[Имя Ф.], [город]','ч. 5 ст. 12.16 · 3\u00A0000\u00A0₽ отменён']
+  ];
+  return '<section class="land-sec"><h2 class="h2">Что говорят водители</h2>'+
+    '<p class="rating"><b>'+PROOF.rating+'</b><span>из 5 · '+PROOF.ratings+' оценок после решения суда</span></p>'+
+    '<div class="voices" style="margin-top:24px">'+
+    '<div class="sms" aria-label="Пример SMS о ходе дела"><div class="sms-h">'+MARK_SVG+'Оспорим</div>'+
+      '<span class="d">20 сентября</span><p class="m">Жалоба по постановлению №&nbsp;…7012345 зарегистрирована в суде.</p>'+
+      '<span class="d">24 сентября</span><p class="m">Назначено заседание на 14 октября. Приходить не нужно: суд рассмотрит дело без вас.</p>'+
+      '<span class="d">14 октября</span><p class="m win">Суд отменил постановление. Штраф 3 000 ₽ платить не нужно.</p></div>'+
+    '<div class="quotes">'+q.map(function(x,i){return '<figure class="quote'+(i===0?' lead-q':'')+'" style="margin:0"><blockquote style="margin:0"><p class="q">'+x[0]+'</p></blockquote><figcaption class="who"><b>'+x[1]+'</b> · '+x[2]+'</figcaption></figure>';}).join('')+'</div>'+
+    '</div></section>';
+}
+var SEAL='<svg class="seal" viewBox="0 0 150 150" role="img" aria-label="Гарантия: не отменили, вернём баллами"><defs><path id="sealArc" d="M75 75 m-56 0 a56 56 0 1 1 112 0 a56 56 0 1 1 -112 0"/></defs>'+
+  '<circle cx="75" cy="75" r="71" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="75" cy="75" r="44" fill="none" stroke="currentColor" stroke-width="1.2"/>'+
+  '<text><textPath href="#sealArc" textLength="346">НЕ ОТМЕНИЛИ · ВЕРНЁМ БАЛЛАМИ ·</textPath></text>'+
+  '<text class="c1" x="75" y="80" text-anchor="middle">0 ₽</text><text class="c2" x="75" y="96" text-anchor="middle">РИСКА</text></svg>';
+function initLanding(){
+  var bar=document.getElementById('landCta');if(!bar||!('IntersectionObserver' in window))return;
+  var seen={};
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){seen[e.target.dataset.io]=e.isIntersecting;});
+    var show=!seen.hero&&!seen.band;bar.classList.toggle('show',show);bar.setAttribute('aria-hidden',show?'false':'true');});
+  var h=document.querySelector('.hero-upload'),b=document.querySelector('.band');
+  if(h){h.dataset.io='hero';io.observe(h);} if(b){b.dataset.io='band';io.observe(b);}
+  ui.io=io;
 }
 function footer(){
   return '<footer class="site"><div class="foot-cols">'+
@@ -937,6 +1139,7 @@ document.addEventListener('click',function(e){var el=e.target.closest('[data-act
 document.addEventListener('change',function(e){var el=e.target;var k=el.dataset&&el.dataset.change;if(!k)return;
   if(k==='file'){var f=el.files&&el.files[0];if(!f)return;ui.retry=current.view==='guide';var okType=/pdf|image/.test(f.type)||/\.(pdf|jpe?g|png|heic|webp)$/i.test(f.name);
     if(!okType){S.draft=mockDecree(f.name);save();go('/guide');return;}startUpload(f.name,false);}
+  else if(k==='calc'){var m={csum:'sum',cpay:'pay',cfirst:'first'}[el.name];ui.calc[m]=m==='sum'?+el.value:el.value;document.getElementById('calcOut').innerHTML=calcOut();}
   else if(k==='consent'){ui.consent=el.checked;updatePhoneBtn();}
   else if(k==='strategy'){ui.strategy=el.value;rerender();var r=document.querySelector('input[name="strategy"][value="'+ui.strategy+'"]');if(r)r.focus();}
   else if(k==='scenario'){S.scenario=el.value;ui.retry=false;save();document.querySelectorAll('#dlg .opt').forEach(function(o){o.classList.toggle('sel',o.querySelector('input').checked);});}
@@ -982,7 +1185,7 @@ function build(){
 function rerender(){var y=window.scrollY;var html=build();if(html==null){go('/');return;}$app.innerHTML=html+cookieBar();window.scrollTo(0,y);}
 var TITLES={home:'Обжалование штрафов с камер',analyzing:'Проверяем постановление',result:'Шансы на отмену',guide:'Файл не распознан',login:'Вход',checkout:'Последний шаг',case:'Дело',history:'Мои дела',profile:'Профиль',referral:'Пригласить друзей',about:'О нас',doc:'Документ'};
 function route(){
-  clearTimers();if(dlg.open)dlg.close();
+  clearTimers();if(dlg.open)dlg.close();if(ui.io){ui.io.disconnect();ui.io=null;}
   var h=location.hash.slice(1)||'/';var qi=h.indexOf('?');var path=qi>=0?h.slice(0,qi):h;var q=new URLSearchParams(qi>=0?h.slice(qi+1):'');
   var parts=path.split('/').filter(Boolean);var view=parts[0]||'home';var arg=parts[1]||null;
   var needAuth={checkout:1,case:1,history:1,profile:1,referral:1};
@@ -995,6 +1198,7 @@ function route(){
   document.title='Оспорим: '+(TITLES[view]||'');
   window.scrollTo(0,0);
   var h1=$app.querySelector('h1');if(h1&&view!=='home'){h1.setAttribute('tabindex','-1');h1.focus({preventScroll:true});}
+  if(view==='home')initLanding();
   if(view==='analyzing')runAnalyzing();
   if(view==='login'&&ui.loginStep==='code')startResend();
 }
