@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Оспорим — промо-ролик</title>
+<style>
+@font-face{font-family:Inter;src:url(fonts/inter-cyr.woff2) format('woff2');font-weight:100 900;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:Inter;src:url(fonts/inter-lat.woff2) format('woff2');font-weight:100 900;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+20BD,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:Spectral;src:url(fonts/spectral-cyr.woff2) format('woff2');font-weight:600;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:Spectral;src:url(fonts/spectral-lat.woff2) format('woff2');font-weight:600;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+20BD,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+:root{--ground:#ECEEEA;--ink:#11261F;--ink2:#14201A;--muted:#4A5650;--line:#C8CDC6;--lime:#A4E35E;--red:#B8361A;--sheet:#fff}
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden;background:var(--ink);transform-origin:0 0;font-family:Inter,system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+.a{position:absolute;will-change:transform,opacity}
+.serif{font-family:Spectral,Georgia,serif;font-weight:600}
+.head{left:90px;width:900px;font-family:Spectral,Georgia,serif;font-weight:600;font-size:104px;line-height:1.04;letter-spacing:-.015em}
+.head .w{display:inline-block;margin-right:.24em}
+.sheet{background:var(--sheet);border-radius:6px;box-shadow:0 2px 0 rgba(17,38,31,.12),0 30px 60px -20px rgba(17,38,31,.35)}
+/* notification */
+#notif{left:90px;top:300px;width:900px;height:190px;border-radius:36px;background:rgba(255,255,255,.96);display:flex;align-items:center;gap:32px;padding:0 40px;box-sizing:border-box;box-shadow:0 30px 80px -20px rgba(0,0,0,.6)}
+#notif .ic{width:104px;height:104px;border-radius:26px;background:var(--red);display:flex;align-items:center;justify-content:center;color:#fff;font:700 64px/1 Inter}
+#notif .t{font:600 42px/1.2 Inter;color:var(--ink2)}
+#notif .s{font:400 36px/1.3 Inter;color:var(--muted);margin-top:6px}
+#notif .tm{position:absolute;right:40px;top:34px;font:400 30px Inter;color:var(--muted)}
+/* decree */
+#decree{left:100px;top:760px;width:880px;padding:56px 56px 60px;box-sizing:border-box}
+#decree .no{font:600 34px/1.2 Inter;white-space:nowrap;color:var(--ink2)}
+#decree .sub{font:400 30px/1.3 Inter;color:var(--muted);margin:8px 0 34px}
+#decree .row{display:flex;justify-content:space-between;border-top:2px solid #E1E4DF;padding:22px 0;font:400 34px/1.3 Inter}
+#decree .row span:first-child{color:var(--muted)}
+#decree .row span:last-child{font-weight:600;color:var(--ink2)}
+#decree .row.sum span:last-child{color:var(--red);font-size:44px}
+#stamp{left:440px;top:1255px;white-space:nowrap;padding:22px 40px;border:6px solid var(--ink);border-radius:14px;background:var(--lime);font:800 50px/1 Inter;letter-spacing:.04em;text-transform:uppercase;color:var(--ink)}
+/* phone */
+#phone{left:210px;top:640px;width:660px;height:960px;border-radius:84px;background:var(--ink);padding:18px;box-sizing:border-box;box-shadow:0 60px 120px -40px rgba(17,38,31,.55)}
+#screen{position:relative;width:100%;height:100%;border-radius:68px;background:#F7F8F5;overflow:hidden}
+#screen .notch{position:absolute;left:50%;top:22px;width:180px;height:44px;margin-left:-90px;border-radius:24px;background:var(--ink)}
+.scr{position:absolute;left:0;top:0;width:100%;height:100%;padding:130px 52px 0;box-sizing:border-box}
+.chip{display:inline-flex;align-items:center;gap:14px;background:#fff;border:2px solid #E1E4DF;border-radius:14px;padding:14px 22px;font:500 28px Inter;color:var(--muted)}
+.scr h3{font:600 58px/1.08 Spectral,Georgia,serif;margin:34px 0 46px;color:var(--ink2)}
+.step{display:flex;align-items:center;gap:26px;font:500 34px/1.25 Inter;color:var(--ink2);margin-bottom:44px}
+.dot{position:relative;flex:none;width:64px;height:64px}
+.dot svg{position:absolute;inset:0}
+.lbl{font:500 30px Inter;color:var(--muted)}
+.bigrow{display:flex;gap:24px;justify-content:space-between;align-items:baseline;margin-top:14px}
+.big{font:600 92px/1 Spectral,Georgia,serif;color:var(--ink2)}
+.pct{font:700 64px/1 Inter;color:var(--ink2)}
+.pbtn{position:absolute;left:52px;right:52px;bottom:60px;height:104px;border-radius:14px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font:600 36px Inter}
+.segs{display:flex;gap:10px;margin:36px 0 34px}
+.segs i{flex:1;height:30px;border-radius:6px;background:#E1E4DF;position:relative;overflow:hidden}
+.segs i b{position:absolute;inset:0;background:var(--ink);transform-origin:0 50%}
+.note{font:400 28px/1.35 Inter;color:var(--muted)}
+.reason{display:flex;gap:18px;font:400 30px/1.35 Inter;color:var(--ink2);margin-top:28px}
+.reason em{font-style:normal;flex:none;width:44px;height:44px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font:700 24px Inter}
+/* docs */
+.doc{left:90px;width:900px;height:200px;display:flex;align-items:center;gap:34px;padding:0 44px;box-sizing:border-box}
+.doc .fi{flex:none;width:92px;height:112px;border-radius:10px;background:var(--ground);position:relative}
+.doc .fi::before{content:"";position:absolute;left:20px;right:20px;top:34px;height:6px;border-radius:3px;background:var(--line);box-shadow:0 18px 0 var(--line),0 36px 0 var(--line)}
+.doc .fi::after{content:"";position:absolute;right:0;top:0;width:28px;height:28px;background:var(--lime);border-bottom-left-radius:10px}
+.doc .dt{font:600 40px/1.2 Inter;color:var(--ink2)}
+.doc .ds{font:400 30px/1.3 Inter;color:var(--muted);margin-top:6px}
+.chk{left:90px;display:flex;align-items:center;gap:26px;font:500 44px/1.2 Inter;color:var(--ink2)}
+.chk i{flex:none;width:64px;height:64px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center}
+/* price */
+#zero{left:90px;top:430px;font:600 420px/1 Spectral,Georgia,serif;color:var(--lime);letter-spacing:-.03em}
+#zeroCap{left:90px;top:900px;width:900px;font:500 60px/1.2 Inter;color:var(--ground)}
+.pl{left:90px;width:900px;border-top:3px solid rgba(236,238,234,.18);padding-top:36px;display:flex;justify-content:space-between;align-items:baseline;font:400 42px/1.25 Inter;color:rgba(236,238,234,.72)}
+.pl b{font:600 46px Inter;color:var(--ground);text-align:right}
+/* end card */
+#logo{left:110px;top:560px;width:860px}
+#tag{left:90px;width:900px;top:900px;text-align:center;font:600 76px/1.1 Spectral,Georgia,serif;color:var(--ink2)}
+#cta{left:120px;top:1230px;width:840px;height:156px;border-radius:18px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;gap:20px;font:600 50px Inter}
+#ctaSub{left:90px;width:900px;top:1420px;text-align:center;font:400 36px Inter;color:var(--muted)}
+#legal{left:90px;width:900px;top:1800px;text-align:center;font:400 24px/1.3 Inter;color:#7A847E}
+#pause{position:fixed;right:12px;bottom:12px;font:12px system-ui;color:#888}
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- S1: hook -->
+  <div class="a" id="notif"><div class="ic">!</div><div><div class="t">Новый штраф</div><div class="s">Камера автофиксации · 3 000 ₽</div></div><div class="tm">сейчас</div></div>
+  <div class="a head" id="h1" style="top:760px;color:var(--ground);font-size:104px" data-text="Пришёл штраф|с камеры?"></div>
+  <div class="a serif" id="amt" style="left:90px;top:1100px;font-size:230px;line-height:1;color:#E26D4F;letter-spacing:-.02em">3 000 ₽</div>
+
+  <!-- S2: don't pay -->
+  <div class="a head" id="h2" style="top:300px;color:var(--ground)" data-text="Не спешите|платить."></div>
+  <div class="a sheet" id="decree">
+    <div class="no">Постановление № 18810577260917012345</div>
+    <div class="sub">по делу об административном правонарушении</div>
+    <div class="row"><span>Дата</span><span>17.09.2026</span></div>
+    <div class="row"><span>Статья</span><span>ч. 5 ст. 12.16 КоАП РФ</span></div>
+    <div class="row sum"><span>Штраф</span><span>3 000 ₽</span></div>
+  </div>
+  <div class="a" id="stamp">Можно оспорить</div>
+
+  <!-- S3/S4: phone -->
+  <div class="a head" id="h3" style="top:300px" data-text="Загрузите|постановление"></div>
+  <div class="a head" id="h4" style="top:300px" data-text="Честно оценим|шансы"></div>
+  <div class="a" id="phone"><div id="screen">
+    <div class="scr" id="scrA">
+      <div class="chip"><svg width="28" height="34" viewBox="0 0 28 34"><path d="M3 1h15l9 9v21a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2z" fill="none" stroke="#4A5650" stroke-width="2.5"/></svg>postanovlenie.pdf</div>
+      <h3>Проверяем постановление</h3>
+      <div class="step"><div class="dot" id="d0"></div>Распознаём текст постановления</div>
+      <div class="step"><div class="dot" id="d1"></div>Сверяем с практикой судов</div>
+      <div class="step"><div class="dot" id="d2"></div>Оцениваем шансы</div>
+    </div>
+    <div class="scr" id="scrB">
+      <div class="lbl">Шансы на отмену</div>
+      <div class="bigrow"><div class="big">Высокие</div><div class="pct" id="pct">0%</div></div>
+      <div class="segs" id="segs"></div>
+      <div class="note">Оценка по фабуле дела и практике судов. Это прогноз, а не гарантия.</div>
+      <div class="reason" id="r0"><em>1</em><span>Если шансы низкие, скажем честно и не возьмём денег</span></div>
+      <div class="pbtn" id="pbtn">Обжаловать</div>
+    </div>
+    <div class="notch"></div>
+  </div></div>
+
+  <!-- S5: documents -->
+  <div class="a head" id="h5" style="top:300px" data-text="Жалоба|по шаблонам|юристов"></div>
+  <div class="a sheet doc" id="doc0" style="top:760px"><div class="fi"></div><div><div class="dt">Жалоба в суд</div><div class="ds">С доводами под ваше постановление</div></div></div>
+  <div class="a sheet doc" id="doc1" style="top:990px"><div class="fi"></div><div><div class="dt">Ходатайство</div><div class="ds">О рассмотрении без вашего участия</div></div></div>
+  <div class="a sheet doc" id="doc2" style="top:1220px"><div class="fi"></div><div><div class="dt">Инструкция по подаче</div><div class="ds">Онлайн через ГАС «Правосудие»</div></div></div>
+  <div class="a chk" id="c0" style="top:1480px"><i><svg width="34" height="34" viewBox="0 0 34 34"><path d="M7 18l7 7 13-15" fill="none" stroke="#A4E35E" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></i>Подаёте онлайн от своего имени</div>
+  <div class="a chk" id="c1" style="top:1580px"><i><svg width="34" height="34" viewBox="0 0 34 34"><path d="M7 18l7 7 13-15" fill="none" stroke="#A4E35E" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></i>В суд ходить не нужно</div>
+
+  <!-- S6: price -->
+  <div class="a" id="zero">0 ₽</div>
+  <div class="a" id="zeroCap">пока ни один ваш штраф<br>не отменён</div>
+  <div class="a pl" id="p0" style="top:1150px"><span>Суд отказал</span><b>вернём оплату баллами</b></div>
+  <div class="a pl" id="p1" style="top:1290px"><span>После первой отмены</span><b>20% от штрафа</b></div>
+
+  <!-- S7: end card -->
+  <svg class="a" id="logo" viewBox="181 492 904 225" aria-label="Оспорим">
+    <defs><clipPath id="wm"><rect id="wmr" x="340" y="480" width="0" height="260"/></clipPath></defs>
+    <g id="mark" style="transform-box:fill-box;transform-origin:50% 50%">
+      <path fill="#A4E35E" d="M201.75 539.18L314.25 499.46Q335 492.14 335 514.14L335 640.64Q335 662.64 314.25 669.96L201.75 709.68Q181 717 181 695L181 568.5Q181 546.5 201.75 539.18Z"/>
+      <path id="tick" fill="none" stroke="#11261F" stroke-width="34" stroke-linecap="round" stroke-linejoin="round" d="M225 617L252 650L316 570" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>
+    </g>
+    <path clip-path="url(#wm)" fill="#11261F" d="M378.5 610A48.5 47.5 0 1 1 475.5 610A48.5 47.5 0 1 1 378.5 610ZM404 610A23 23 0 1 0 450 610A23 23 0 1 0 404 610Z M573.89 596A47.5 47.5 0 1 0 574.46 622L548.97 622A24 23 0 1 1 547.54 596Z M580 655V565H651Q665 565 665 579V655H641V587H604V655Z M671.5 610A48.5 47.5 0 1 1 768.5 610A48.5 47.5 0 1 1 671.5 610ZM697 610A23 23 0 1 0 743 610A23 23 0 1 0 697 610Z M776 694V565H800V694ZM775 610A48.5 47.5 0 1 1 872 610A48.5 47.5 0 1 1 775 610ZM800.5 610A23 23 0 1 0 846.5 610A23 23 0 1 0 800.5 610Z M879 655V565H903V655Z M943 655V565H967V655Z M903 618 L943 565 L943 600.67 L903 654Z M977 655V565H1001L1031 608L1061 565H1085V655H1061V604L1042 636Q1031 652 1020 636L1001 604V655Z"/>
+  </svg>
+  <div class="a" id="tag">Отмените штраф<br>с камеры через суд</div>
+  <div class="a" id="cta">Проверить шансы бесплатно<svg width="44" height="44" viewBox="0 0 44 44"><path d="M10 22h24M24 12l10 10-10 10" fill="none" stroke="#A4E35E" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <div class="a" id="ctaSub">Загрузите постановление. Без регистрации.</div>
+  <div class="a" id="legal">Реклама · [Юрлицо], ИНН [ИНН] · erid: [токен]<br>Услуга оказывается в форме юридической консультации по оферте</div>
+</div>
+
+<script>
+var DUR = 25;
+var $ = function(id){ return document.getElementById(id); };
+var clamp = function(x,a,b){ return Math.max(a, Math.min(b, x)); };
+var P = function(t,a,b){ return clamp((t-a)/(b-a), 0, 1); };
+var eo = function(x){ return 1 - Math.pow(1-x, 3); };
+var eio = function(x){ return x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x+2, 3)/2; };
+var back = function(x){ var c1=1.4, c3=c1+1; return 1 + c3*Math.pow(x-1,3) + c1*Math.pow(x-1,2); };
+
+function set(el, o){
+  var tr = 'translate(' + (o.x||0) + 'px,' + (o.y||0) + 'px)';
+  if (o.s != null) tr += ' scale(' + o.s + ')';
+  if (o.r) tr += ' rotate(' + o.r + 'deg)';
+  el.style.transform = tr;
+  el.style.opacity = o.o == null ? 1 : o.o;
+  el.style.visibility = (o.o === 0) ? 'hidden' : 'visible';
+}
+
+// split headlines into words
+document.querySelectorAll('.head').forEach(function(h){
+  h.innerHTML = h.dataset.text.split('|').map(function(line){
+    return '<div>' + line.split(' ').map(function(w){ return '<span class="w">' + w + '</span>'; }).join('') + '</div>';
+  }).join('');
+});
+function head(id, t, a, b){
+  var el = $(id), ws = el.querySelectorAll('.w');
+  var out = eio(P(t, b, b + .4));
+  var vis = t >= a - .01 && t < b + .45;
+  el.style.visibility = vis ? 'visible' : 'hidden';
+  el.style.opacity = 1 - out;
+  el.style.transform = 'translateY(' + (-50*out) + 'px)';
+  ws.forEach(function(w, i){
+    var p = eo(P(t, a + i*.08, a + i*.08 + .55));
+    w.style.opacity = p;
+    w.style.transform = 'translateY(' + (70*(1-p)) + 'px)';
+  });
+}
+
+// segments
+var segs = $('segs');
+for (var i = 0; i < 10; i++) segs.insertAdjacentHTML('beforeend', '<i><b></b></i>');
+var segB = segs.querySelectorAll('b');
+
+// step dots: ring / spinner / check
+function dot(el, state, t){
+  var c = 32, r = 26;
+  if (state === 2) {
+    el.innerHTML = '<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="#11261F"/><path d="M19 33l9 9 17-19" fill="none" stroke="#A4E35E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  } else if (state === 1) {
+    var rot = (t * 420) % 360;
+    el.innerHTML = '<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="' + r + '" fill="none" stroke="#E1E4DF" stroke-width="6"/><circle cx="32" cy="32" r="' + r + '" fill="none" stroke="#11261F" stroke-width="6" stroke-linecap="round" stroke-dasharray="50 200" transform="rotate(' + rot + ' 32 32)"/></svg>';
+  } else {
+    el.innerHTML = '<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="' + r + '" fill="none" stroke="#E1E4DF" stroke-width="6"/></svg>';
+  }
+}
+
+function mix(c1, c2, k){
+  var a = parseInt(c1.slice(1), 16), b = parseInt(c2.slice(1), 16);
+  var ch = function(s){ return Math.round(((a>>s)&255)*(1-k) + ((b>>s)&255)*k); };
+  return 'rgb(' + ch(16) + ',' + ch(8) + ',' + ch(0) + ')';
+}
+var INK = '#11261F', GROUND = '#ECEEEA';
+
+function render(t){
+  // background
+  var bg;
+  if (t < 6.2) bg = INK;
+  else if (t < 6.8) bg = mix(INK, GROUND, eio(P(t, 6.2, 6.8)));
+  else if (t < 17.4) bg = GROUND;
+  else if (t < 17.9) bg = mix(GROUND, INK, eio(P(t, 17.4, 17.9)));
+  else if (t < 20.9) bg = INK;
+  else bg = mix(INK, GROUND, eio(P(t, 20.9, 21.4)));
+  $('stage').style.background = bg;
+
+  // S1 notification: drop in, shake, fly out
+  var n = back(P(t, .2, .85)), nOut = eio(P(t, 3.0, 3.4));
+  var shake = t > .95 && t < 1.45 ? Math.sin((t-.95)*50) * 14 * (1 - P(t, .95, 1.45)) : 0;
+  set($('notif'), {o: t < .2 || t > 3.4 ? 0 : clamp(P(t,.2,.5),0,1)*(1-nOut), y: -320*(1-n) - 200*nOut, x: shake});
+  head('h1', t, 1.0, 3.0);
+  var am = P(t, 1.6, 2.3), amOut = eio(P(t, 3.0, 3.4));
+  $('amt').textContent = (Math.round(3000*eo(am)/10)*10).toLocaleString('ru-RU') + ' ₽';
+  set($('amt'), {o: t < 1.6 || t > 3.4 ? 0 : P(t,1.6,1.8)*(1-amOut), y: 40*(1-eo(am)) - 50*amOut});
+
+  // S2 decree
+  head('h2', t, 3.4, 6.1);
+  var d = eo(P(t, 3.7, 4.5)), dOut = eio(P(t, 6.0, 6.7));
+  set($('decree'), {o: t < 3.7 || t > 6.7 ? 0 : P(t,3.7,4.0)*(1-dOut), y: 700*(1-d) + 260*dOut, r: -2.5*(1-dOut) + 6*(1-d), s: 1 - .45*dOut});
+  var st = P(t, 4.9, 5.25), stOut = eio(P(t, 6.0, 6.5));
+  set($('stamp'), {o: t < 4.9 || t > 6.5 ? 0 : st*(1-stOut), s: 1.8 - .8*eo(st), r: -8, y: 260*stOut});
+
+  // S3 phone + checking
+  head('h3', t, 6.5, 9.5);
+  head('h4', t, 9.9, 13.3);
+  var ph = eo(P(t, 6.5, 7.3)), phOut = eio(P(t, 13.2, 13.8));
+  set($('phone'), {o: t < 6.5 || t > 13.8 ? 0 : P(t,6.5,6.8)*(1-phOut), y: 900*(1-ph) + 900*phOut});
+  var steps = [7.5, 8.3, 9.1];
+  steps.forEach(function(end, i){
+    var start = i ? steps[i-1] : 7.1;
+    dot($('d'+i), t >= end ? 2 : t >= start ? 1 : 0, t);
+  });
+  var sw = eio(P(t, 9.6, 10.0));
+  set($('scrA'), {o: 1 - sw, x: -120*sw});
+  set($('scrB'), {o: sw, x: 120*(1-sw)});
+  var pc = eo(P(t, 10.1, 11.6));
+  $('pct').textContent = Math.round(72*pc) + '%';
+  segB.forEach(function(b, i){
+    b.style.transform = 'scaleX(' + clamp(72*pc/10 - i, 0, 1) + ')';
+  });
+  var rr = eo(P(t, 11.8, 12.3));
+  set($('r0'), {o: rr, y: 30*(1-rr)});
+  var pb = eo(P(t, 12.3, 12.7));
+  set($('pbtn'), {o: pb, y: 40*(1-pb)});
+
+  // S4 documents
+  head('h5', t, 13.6, 17.3);
+  ['doc0','doc1','doc2'].forEach(function(id, i){
+    var p = eo(P(t, 14.1 + i*.25, 14.8 + i*.25)), out = eio(P(t, 17.1 + i*.05, 17.5 + i*.05));
+    set($(id), {o: t < 14.1 || t > 17.6 ? 0 : P(t, 14.1+i*.25, 14.4+i*.25)*(1-out), x: 1100*(1-p) - 60*out, y: -30*out});
+  });
+  ['c0','c1'].forEach(function(id, i){
+    var p = eo(P(t, 15.4 + i*.35, 15.9 + i*.35)), out = eio(P(t, 17.1, 17.5));
+    set($(id), {o: t < 15.4 || t > 17.5 ? 0 : p*(1-out), y: 40*(1-p)});
+  });
+
+  // S5 price
+  var z = back(P(t, 17.8, 18.5)), zOut = eio(P(t, 20.7, 21.1));
+  set($('zero'), {o: t < 17.8 || t > 21.1 ? 0 : P(t,17.8,18.1)*(1-zOut), s: .6 + .4*z, y: -60*zOut});
+  $('zero').style.transformOrigin = '0 70%';
+  var zc = eo(P(t, 18.2, 18.7));
+  set($('zeroCap'), {o: t > 21.1 ? 0 : zc*(1-zOut), y: 40*(1-zc) - 60*zOut});
+  ['p0','p1'].forEach(function(id, i){
+    var p = eo(P(t, 19.0 + i*.4, 19.5 + i*.4));
+    set($(id), {o: t > 21.1 ? 0 : p*(1-zOut), y: 40*(1-p) - 60*zOut});
+  });
+
+  // S6 end card
+  var on = t >= 21.2;
+  var m = back(P(t, 21.2, 21.8));
+  $('logo').style.visibility = on ? 'visible' : 'hidden';
+  $('mark').style.transform = 'scale(' + (on ? m : 0) + ') rotate(' + (-20*(1-m)) + 'deg)';
+  $('tick').setAttribute('stroke-dashoffset', 1 - eio(P(t, 21.6, 22.0)));
+  $('wmr').setAttribute('width', 760 * eio(P(t, 21.9, 22.6)));
+  var tg = eo(P(t, 22.4, 23.0));
+  set($('tag'), {o: on ? tg : 0, y: 40*(1-tg)});
+  var ct = back(P(t, 22.8, 23.4));
+  var pulse = t > 23.6 ? 1 + .025*Math.sin((t-23.6)*5.5) : 1;
+  set($('cta'), {o: on ? P(t, 22.8, 23.0) : 0, s: (.85 + .15*ct) * pulse, y: 30*(1-ct)});
+  var cs = eo(P(t, 23.2, 23.7));
+  set($('ctaSub'), {o: on ? cs : 0, y: 20*(1-cs)});
+  set($('legal'), {o: on ? P(t, 21.4, 21.8) : 0});
+}
+
+// fit stage to window for preview; ?render=1 keeps native size for frame capture
+var RENDER = /render=1/.test(location.search);
+function fit(){
+  if (RENDER) return;
+  var k = Math.min(innerWidth/1080, innerHeight/1920);
+  var s = $('stage');
+  s.style.transform = 'scale(' + k + ')';
+  s.style.left = (innerWidth - 1080*k)/2 + 'px';
+}
+window.render = render;
+window.DUR = DUR;
+if (!RENDER) {
+  addEventListener('resize', fit); fit();
+  var t0 = null, paused = false, tp = 0;
+  addEventListener('click', function(){ paused = !paused; t0 = null; });
+  (function loop(ts){
+    if (!paused) { if (t0 === null) t0 = ts - tp*1000; tp = ((ts - t0)/1000) % DUR; render(tp); }
+    requestAnimationFrame(loop);
+  })(performance.now());
+} else {
+  render(0);
+}
+</script>
+</body>
+</html>
