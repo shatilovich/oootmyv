@@ -104,15 +104,16 @@ section.block{padding-top:32px}
 .hero-upload{grid-area:upload;display:flex;flex-direction:column;gap:10px}
 .hero-upload:has(#file:focus-visible) label.btn,.band:has(#file2:focus-visible) label.btn{outline:2px solid var(--ink);outline-offset:3px}
 .band:has(#file2:focus-visible) label.btn{outline-color:var(--btn-fg)}
-.doc{position:relative;padding:20px 20px 62px;background:var(--sheet);border-radius:3px;transform:rotate(-1deg);box-shadow:0 1px 0 var(--line),0 18px 30px -18px var(--shadow)}
+.doc{position:relative;padding:20px 20px 28px;background:var(--sheet);border-radius:3px;transform:rotate(-1deg);box-shadow:0 1px 0 var(--line),0 18px 30px -18px var(--shadow)}
 .doc-kicker{font-size:12px;color:var(--muted)}
 .doc-no{font-family:Spectral,Georgia,serif;font-size:17px;font-weight:600;margin-top:4px;overflow-wrap:anywhere}
 .doc .kv{margin-top:16px;grid-template-columns:76px minmax(0,1fr)}
 .circled{position:relative;display:inline-block;font-size:16px;font-weight:700}
-.circled svg{position:absolute;left:-24px;top:-14px;overflow:visible;pointer-events:none}
-.ink-draw{stroke-dasharray:340;stroke-dashoffset:0;animation:ink 1.4s .5s ease-out backwards}
-@keyframes ink{from{stroke-dashoffset:340}to{stroke-dashoffset:0}}
-.margin-note{position:absolute;right:18px;bottom:16px;display:flex;align-items:flex-end;gap:6px;color:var(--accent);font-family:Spectral,Georgia,serif;font-style:italic;font-size:18px;transform:rotate(-3deg)}
+.circled svg{position:absolute;left:-.8em;right:-.8em;top:-.6em;bottom:-.6em;width:calc(100% + 1.6em);height:calc(100% + 1.2em);max-width:none;overflow:visible;pointer-events:none}
+.ink-draw{stroke-dasharray:1;stroke-dashoffset:0;animation:ink 1.4s .5s ease-out backwards}
+@keyframes ink{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.margin-note{display:flex;align-items:flex-end;gap:6px;width:max-content;margin:8px 0 0 4px;color:var(--accent);font-family:Spectral,Georgia,serif;font-style:italic;font-size:16px;line-height:1;white-space:nowrap;transform:rotate(-3deg);transform-origin:left top}
+.margin-note svg{flex:none}
 .how{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:22px}
 .how li{display:grid;grid-template-columns:36px minmax(0,1fr);column-gap:8px}
 .how .n{font-family:Spectral,Georgia,serif;font-size:28px;line-height:1;color:var(--accent)}
@@ -304,7 +305,8 @@ dialog::backdrop{background:var(--backdrop)}
   .hero-head .title{font-size:62px}
   .hero-upload{max-width:420px}
   .hero-sheet{padding-top:8px}
-  .doc{padding:32px 32px 84px}
+  .doc{padding:32px 32px 40px}
+  .margin-note{font-size:18px;margin-left:26px}
   .doc .kv{font-size:16px;grid-template-columns:96px minmax(0,1fr)}
   .how{grid-template-columns:repeat(3,minmax(0,1fr));gap:40px}
   .land-grid{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:72px}
@@ -466,8 +468,8 @@ function vLanding(){
     '<div class="hero-sheet"><div class="doc" aria-label="Пример постановления">'+
       '<p class="doc-kicker">Постановление</p><p class="doc-no">№ 18810577260917012345</p>'+
       '<p class="tiny muted">по делу об административном правонарушении</p>'+
-      '<dl class="kv"><dt>Дата</dt><dd>17.09.2026</dd><dt>Статья</dt><dd>ч. 5 ст. 12.16 КоАП РФ</dd><dt>Место</dt><dd>[адрес камеры]</dd><dt>Штраф</dt><dd><span class="circled">3&nbsp;000&nbsp;₽<svg width="112" height="48" viewBox="0 0 112 48" fill="none" aria-hidden="true"><path class="ink-draw" d="M60 6 C 94 4, 110 14, 106 26 C 102 40, 62 44, 30 41 C 8 38, 2 26, 10 16 C 18 7, 42 3, 70 5" stroke="currentColor" style="color:var(--accent)" stroke-width="2" stroke-linecap="round"/></svg></span></dd></dl>'+
-      '<div class="margin-note"><svg width="34" height="26" viewBox="0 0 34 26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 23 C 22 23, 10 17, 6 4"/><path d="M2 9 L6 3 L11 8"/></svg><span>можно оспорить</span></div>'+
+      '<dl class="kv"><dt>Дата</dt><dd>17.09.2026</dd><dt>Статья</dt><dd>ч. 5 ст. 12.16 КоАП РФ</dd><dt>Место</dt><dd>[адрес камеры]</dd><dt>Штраф</dt><dd><span class="circled">3&nbsp;000&nbsp;₽<svg viewBox="0 0 112 48" preserveAspectRatio="none" fill="none" aria-hidden="true"><path class="ink-draw" d="M60 6 C 94 4, 110 14, 106 26 C 102 40, 62 44, 30 41 C 8 38, 2 26, 10 16 C 18 7, 42 3, 70 5" stroke="currentColor" style="color:var(--accent)" stroke-width="2" stroke-linecap="round" pathLength="1"/></svg></span>'+
+      '<div class="margin-note"><svg width="34" height="26" viewBox="0 0 34 26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 23 C 22 23, 10 17, 6 4"/><path d="M2 9 L6 3 L11 8"/></svg><span>можно оспорить</span></div></dd></dl>'+
     '</div></div>'+
     '<div class="hero-upload">'+uploadBtn('file')+
       '<p class="small muted center">PDF, фото или скриншот. Шансы покажем без регистрации.</p>'+
