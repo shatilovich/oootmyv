@@ -1,5 +1,7 @@
 // Vercel Function: распознаёт постановление через Gemini и возвращает поля в JSON.
-// Ключ хранится в переменной окружения GEMINI_API_KEY (Vercel → Project → Settings → Environment Variables).
+// Ключи хранятся в переменных окружения (Vercel → Project → Settings → Environment Variables):
+// GEMINI_API_KEY — основной провайдер; OPENROUTER_API_KEY — необязательный запасной (бесплатные модели OpenRouter),
+// на него уходим, если Gemini перегружен.
 
 export const config = { maxDuration: 60 };
 
@@ -10,7 +12,10 @@ const API = 'https://generativelanguage.googleapis.com/v1beta';
 const BUSY = new Set([500, 503, 504]);
 // При этих ответах есть смысл попробовать другую модель: перегрузка, квота модели, модель недоступна ключу.
 const NEXT = new Set([...BUSY, 404, 429]);
-const DEADLINE = 50_000; // запас до maxDuration
+const DEADLINE = 55_000; // запас до maxDuration
+const GEMINI_BUDGET = 25_000; // сколько отдаём Gemini, если есть запасной провайдер
+const OR_API = 'https://openrouter.ai/api/v1';
+const OR_MODELS = (process.env.OPENROUTER_MODEL || '').split(',').map((s) => s.trim()).filter(Boolean);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const MAX_BYTES = 4 * 1024 * 1024; // лимит тела запроса у Vercel Functions ~4.5 МБ
 const MIME = /^(application\/pdf|image\/(jpeg|png|webp|heic|heif))$/;
@@ -66,13 +71,15 @@ async function fallbacks(key) {
     const r = await fetch(`${API}/models?pageSize=1000`, { headers: { 'x-goog-api-key': key }, signal: AbortSignal.timeout(5000) });
     const { models = [] } = await r.json();
     const ver = (n) => parseFloat(n.match(/^gemini-([\d.]+)/)[1]);
-    const rank = (n) => (/-preview/.test(n) ? 4 : 0) + (/-pro/.test(n) ? 2 : /-lite/.test(n) ? 1 : 0);
+    // flash-lite у каждой версии идёт сразу за flash: у неё свой пул мощностей, и она реже перегружена.
+    const rank = (n) => (/-preview/.test(n) ? 4 : 0) + (/-pro/.test(n) ? 2 : 0);
+    const lite = (n) => (/-lite/.test(n) ? 1 : 0);
     discovered = models
       .filter((m) => m.supportedGenerationMethods?.includes('generateContent'))
       .map((m) => m.name.replace(/^models\//, ''))
       .filter((n) => n !== MODEL && /^gemini-[\d.]+-(flash|pro)/.test(n) && !/tts|image|live|audio|embed|exp|computer|robotics/.test(n))
-      .sort((a, b) => rank(a) - rank(b) || ver(b) - ver(a))
-      .slice(0, 4);
+      .sort((a, b) => rank(a) - rank(b) || ver(b) - ver(a) || lite(a) - lite(b))
+      .slice(0, 5);
   } catch (e) {
     console.warn('Gemini: list models failed', String(e));
     return [];
@@ -80,35 +87,98 @@ async function fallbacks(key) {
   return discovered;
 }
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'method' });
-  const key = process.env.GEMINI_API_KEY;
-  if (!key) return res.status(500).json({ error: 'no_key' });
+// Бесплатные модели OpenRouter, которые понимают картинки. Сначала те, что умеют отвечать по JSON-схеме.
+let orDiscovered;
+async function orModels() {
+  if (OR_MODELS.length) return OR_MODELS.map((id) => ({ id, structured: true }));
+  if (orDiscovered) return orDiscovered;
+  try {
+    const r = await fetch(`${OR_API}/models`, { signal: AbortSignal.timeout(5000) });
+    const { data = [] } = await r.json();
+    orDiscovered = data
+      .filter((m) => m.id.endsWith(':free') && m.architecture?.input_modalities?.includes('image'))
+      .map((m) => ({
+        id: m.id,
+        structured: !!m.supported_parameters?.includes('structured_outputs'),
+        ctx: m.context_length || 0,
+      }))
+      .sort((a, b) => b.structured - a.structured || b.ctx - a.ctx)
+      .slice(0, 4);
+  } catch (e) {
+    console.warn('OpenRouter: list models failed', String(e));
+    return [];
+  }
+  return orDiscovered;
+}
 
-  const { mime, data } = req.body || {};
-  if (!MIME.test(mime || '') || typeof data !== 'string') return res.status(400).json({ error: 'bad_file' });
-  if (data.length * 0.75 > MAX_BYTES) return res.status(413).json({ error: 'too_big' });
+// Схема Gemini (OBJECT/STRING, nullable) → обычная JSON Schema для OpenAI-совместимого API.
+const toJsonSchema = (s) => {
+  const t = s.type.toLowerCase();
+  const out = { type: s.nullable ? [t, 'null'] : t };
+  if (s.enum) out.enum = s.enum;
+  if (s.properties) {
+    out.properties = Object.fromEntries(Object.entries(s.properties).map(([k, v]) => [k, toJsonSchema(v)]));
+    out.required = Object.keys(s.properties);
+    out.additionalProperties = false;
+  }
+  return out;
+};
+const JSON_SCHEMA = toJsonSchema(SCHEMA);
+const FIELDS = `Ответь только JSON-объектом без пояснений с полями:
+${Object.entries(SCHEMA.properties)
+  .map(([k, v]) => `- ${k} (${v.enum ? v.enum.join('|') : v.type.toLowerCase()}${v.nullable ? ' или null' : ''})${v.description ? ': ' + v.description : ''}`)
+  .join('\n')}`;
 
+// Бесплатные модели не всегда соблюдают типы: приводим ответ к схеме, которую ждёт клиент.
+function normalize(x) {
+  const out = {};
+  for (const [k, v] of Object.entries(SCHEMA.properties)) {
+    let val = x?.[k] ?? null;
+    if (v.type === 'NUMBER' && val !== null) {
+      val = typeof val === 'number' ? val : parseFloat(String(val).replace(/\s/g, '').replace(',', '.').replace(/[^\d.]/g, ''));
+      if (!Number.isFinite(val)) val = null;
+    } else if (v.type === 'BOOLEAN' && val !== null) {
+      val = val === true || /^(true|да|yes)$/i.test(String(val)) ? true : val === false || /^(false|нет|no)$/i.test(String(val)) ? false : null;
+    } else if (v.type === 'STRING' && val !== null) {
+      val = String(val).trim() || null;
+      if (v.enum && !v.enum.includes(val)) val = null;
+    }
+    out[k] = val;
+  }
+  if (out.is_decree === null) out.is_decree = !!(out.number && out.art);
+  if (out.quality === null) out.quality = 'medium';
+  return out;
+}
+
+function parseJson(text) {
+  const t = String(text || '');
+  try {
+    return JSON.parse(t);
+  } catch {
+    const m = t.match(/\{[\s\S]*\}/);
+    if (!m) throw new Error('no json');
+    return JSON.parse(m[0]);
+  }
+}
+
+// Gemini: основная модель с повтором, затем запасные, в пределах budget мс.
+// Возвращает { data } или { status, error }.
+async function gemini(key, mime, data, budget) {
+  const started = Date.now();
   const body = JSON.stringify({
     contents: [{ parts: [{ inline_data: { mime_type: mime, data } }, { text: PROMPT }] }],
     generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: SCHEMA },
   });
-  const started = Date.now();
-  const call = (model) =>
-    fetch(`${API}/models/${model}:generateContent`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-      body,
-      signal: AbortSignal.timeout(Math.max(1000, DEADLINE - (Date.now() - started))),
-    });
-
-  // Gemini периодически отвечает 503 «high demand»: повторяем основную модель, затем идём по запасным
-  // и напоследок ещё раз пробуем основную. Ошибку отдаём от основной модели: она информативнее 404 запасной.
   const attempt = async (model, wait) => {
-    if (Date.now() - started + wait > DEADLINE) return null;
+    if (Date.now() - started + wait > budget - 2000) return null;
     if (wait) await sleep(wait);
     try {
-      const resp = await call(model);
+      const resp = await fetch(`${API}/models/${model}:generateContent`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+        body,
+        signal: AbortSignal.timeout(Math.max(1000, budget - (Date.now() - started))),
+      });
       if (!resp.ok) console.warn('Gemini unavailable', model, resp.status);
       return resp;
     } catch (e) {
@@ -116,6 +186,7 @@ export default async function handler(req, res) {
       return null;
     }
   };
+  // Ошибку отдаём от основной модели: она информативнее 404 запасной.
   let r = await attempt(MODEL, 0);
   if (!r || NEXT.has(r.status)) r = (await attempt(MODEL, 1500)) || r;
   if (!r || NEXT.has(r.status)) {
@@ -125,21 +196,81 @@ export default async function handler(req, res) {
       if (resp?.ok) break;
     }
   }
-  if (!r) return res.status(502).json({ error: 'upstream' });
-
+  if (!r) return { status: 502, error: 'upstream' };
   if (!r.ok) {
     const detail = await r.text().catch(() => '');
     console.error('Gemini', r.status, detail.slice(0, 500));
     const error = r.status === 429 ? 'quota' : BUSY.has(r.status) ? 'busy' : 'upstream';
-    return res.status(error === 'upstream' ? 502 : r.status).json({ error });
+    return { status: error === 'upstream' ? 502 : r.status, error };
   }
-
   const j = await r.json();
   const text = j?.candidates?.[0]?.content?.parts?.map((p) => p.text || '').join('');
   try {
-    return res.status(200).json(JSON.parse(text));
+    return { data: JSON.parse(text) };
   } catch (e) {
     console.error('Gemini: bad JSON', String(text).slice(0, 500));
-    return res.status(502).json({ error: 'parse' });
+    return { status: 502, error: 'parse' };
   }
+}
+
+// OpenRouter: перебираем бесплатные модели с распознаванием картинок до первого разборчивого ответа.
+async function openrouter(key, mime, data, deadline) {
+  // HEIC OpenRouter не принимает; PDF разбирает плагин file-parser (движок pdf-text бесплатный).
+  if (/heic|heif/.test(mime)) return null;
+  const pdf = mime === 'application/pdf';
+  const file = pdf
+    ? { type: 'file', file: { filename: 'decree.pdf', file_data: `data:${mime};base64,${data}` } }
+    : { type: 'image_url', image_url: { url: `data:${mime};base64,${data}` } };
+  for (const m of await orModels()) {
+    const left = deadline - Date.now();
+    if (left < 5000) break;
+    try {
+      const r = await fetch(`${OR_API}/chat/completions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+        body: JSON.stringify({
+          model: m.id,
+          temperature: 0,
+          messages: [{ role: 'user', content: [{ type: 'text', text: `${PROMPT}\n\n${FIELDS}` }, file] }],
+          ...(m.structured && { response_format: { type: 'json_schema', json_schema: { name: 'decree', strict: true, schema: JSON_SCHEMA } } }),
+          ...(pdf && { plugins: [{ id: 'file-parser', pdf: { engine: 'pdf-text' } }] }),
+        }),
+        signal: AbortSignal.timeout(left),
+      });
+      if (!r.ok) {
+        console.warn('OpenRouter unavailable', m.id, r.status, (await r.text().catch(() => '')).slice(0, 300));
+        continue;
+      }
+      const j = await r.json();
+      const text = j?.choices?.[0]?.message?.content;
+      try {
+        return { data: normalize(parseJson(text)) };
+      } catch (e) {
+        console.warn('OpenRouter: bad JSON', m.id, String(text).slice(0, 300));
+      }
+    } catch (e) {
+      console.warn('OpenRouter fetch failed', m.id, String(e));
+    }
+  }
+  return null;
+}
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') return res.status(405).json({ error: 'method' });
+  const key = process.env.GEMINI_API_KEY;
+  const orKey = process.env.OPENROUTER_API_KEY;
+  if (!key && !orKey) return res.status(500).json({ error: 'no_key' });
+
+  const { mime, data } = req.body || {};
+  if (!MIME.test(mime || '') || typeof data !== 'string') return res.status(400).json({ error: 'bad_file' });
+  if (data.length * 0.75 > MAX_BYTES) return res.status(413).json({ error: 'too_big' });
+
+  const started = Date.now();
+  const g = key ? await gemini(key, mime, data, orKey ? GEMINI_BUDGET : DEADLINE) : { status: 503, error: 'busy' };
+  if (g.data) return res.status(200).json(g.data);
+  if (orKey) {
+    const o = await openrouter(orKey, mime, data, started + DEADLINE);
+    if (o) return res.status(200).json(o.data);
+  }
+  return res.status(g.status).json({ error: g.error });
 }
