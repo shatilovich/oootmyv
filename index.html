@@ -205,6 +205,19 @@ footer.site a,footer.site button{font-size:14px}
 .tabbar a[aria-current="page"]{color:var(--ink);font-weight:700}
 .tabbar a[aria-current="page"] svg{stroke-width:1.9}
 main.has-tabs{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
+footer.site.has-tabs{padding-bottom:calc(190px + env(safe-area-inset-bottom,0px))}
+.land-cta.over-tabs{bottom:calc(64px + env(safe-area-inset-bottom,0px));padding-bottom:12px}
+
+/* burger menu (mobile) */
+#menuBtn{margin-right:-10px}
+.menu{position:fixed;left:0;right:0;top:calc(60px + env(safe-area-inset-top,0px));bottom:0;z-index:45;overflow-y:auto;overscroll-behavior:contain;background:var(--ground);border-top:1px solid var(--line);padding:8px 20px calc(28px + env(safe-area-inset-bottom,0px))}
+.menu[hidden]{display:none}
+.menu h3{margin:24px 0 4px;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.menu .sec a{display:flex;align-items:center;min-height:52px;border-bottom:1px solid var(--line-soft);color:var(--ink);text-decoration:none;font-family:Spectral,Georgia,serif;font-size:23px;font-weight:600}
+.menu .sub a,.menu .sub button{display:flex;align-items:center;width:100%;min-height:44px;padding:0;border:0;background:none;color:var(--ink);text-decoration:none;font:400 16px/1.3 system-ui,-apple-system,"Segoe UI",sans-serif;text-align:left;cursor:pointer}
+.menu a:hover,.menu .sub button:hover{color:var(--accent)}
+.menu .acts{display:flex;flex-direction:column;gap:10px;margin-top:28px}
+html.menu-open{overflow:hidden}
 
 /* cookie, toast, dialog */
 .cookie{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:40;max-width:560px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:14px 14px 14px 16px;background:var(--btn-bg);color:var(--btn-fg);border-radius:10px;box-shadow:0 10px 30px -10px var(--shadow)}
@@ -285,6 +298,8 @@ dialog::backdrop{background:var(--backdrop)}
   .hdr{padding:12px 40px}
   .desk-nav{display:flex}
   .tabbar{display:none}
+  .menu{display:none!important}
+  footer.site.has-tabs{padding-bottom:64px}
   main.has-tabs{padding-bottom:64px}
   .page{padding:0 40px}
   .wide{padding:0 40px}
@@ -474,6 +489,8 @@ var I={
   file:'<svg width="22" height="22" viewBox="0 0 24 24" stroke-width="1.6" '+sv+'><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>',
   users:'<svg width="22" height="22" viewBox="0 0 24 24" stroke-width="1.6" '+sv+'><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20"/><circle cx="10" cy="8" r="3.5"/><path d="M20 20v-1.5a3.5 3.5 0 0 0-2.5-3.35"/><path d="M15.5 4.6a3.5 3.5 0 0 1 0 6.8"/></svg>',
   user:'<svg width="22" height="22" viewBox="0 0 24 24" stroke-width="1.6" '+sv+'><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
+  menu:'<svg width="24" height="24" viewBox="0 0 24 24" stroke-width="1.8" '+sv+'><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>',
+  home:'<svg width="22" height="22" viewBox="0 0 24 24" stroke-width="1.6" '+sv+'><path d="M4 10.5L12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z"/></svg>',
   info:'<svg width="22" height="22" viewBox="0 0 24 24" stroke-width="1.6" '+sv+'><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.5v.01"/></svg>'
 };
 
@@ -525,8 +542,8 @@ function hdrLogo(right){
   return '<header class="hdr">'+LOGO+right+'</header>';
 }
 function hdrLanding(){
-  var nav=[['proof','Результаты'],['how','Как это работает'],['price','Стоимость'],['faq','Вопросы']].map(function(x){return '<a href="#/?s='+x[0]+'" data-action="jump" data-target="'+x[0]+'">'+x[1]+'</a>';}).join('')+'<a href="#/about">О нас</a>';
-  return '<header class="hdr"><div class="hdr-l">'+LOGO+'<nav class="desk-nav" aria-label="Разделы страницы">'+nav+'</nav></div>'+userLink()+'</header>';
+  var nav=SECTIONS.map(secLink).join('')+'<a href="#/about">О нас</a>';
+  return '<header class="hdr"><div class="hdr-l">'+LOGO+'<nav class="desk-nav" aria-label="Разделы страницы">'+nav+'</nav></div><div class="hdr-r">'+(S.user?'<span class="desk-only">'+userLink()+'</span>':userLink())+burger()+'</div></header>'+menu();
 }
 function hdrBack(label,to,noUser){
   return '<header class="hdr"><div class="hdr-l"><span class="desk-only">'+LOGO+'</span><a class="back" href="'+to+'">'+I.back+esc(label)+'</a></div>'+(S.user&&!noUser?'<span class="desk-only">'+userLink()+'</span>':'')+'</header>';
@@ -535,12 +552,32 @@ var TABS=[['history','Дела','file'],['referral','Друзья','users'],['pr
 function hdrCab(active){
   return '<header class="hdr">'+LOGO+'<nav class="desk-nav" aria-label="Разделы кабинета">'+
     TABS.map(function(t){return '<a href="#/'+t[0]+'"'+(t[0]===active?' aria-current="page"':'')+'>'+t[1]+'</a>';}).join('')+
-    '</nav></header>';
+    '</nav>'+burger()+'</header>'+menu();
 }
+/* Нижние табы (мобильные) — навигация по приложению для вошедшего пользователя. «О нас» и документы живут в бургер-меню. */
+var MTABS=[['','Главная','home'],['history','Дела','file'],['referral','Друзья','users'],['profile','Профиль','user']];
 function tabbar(active){
-  return '<nav class="tabbar" aria-label="Разделы">'+TABS.map(function(t){
+  if(!S.user)return '';
+  return '<nav class="tabbar" aria-label="Разделы">'+MTABS.map(function(t){
     return '<a href="#/'+t[0]+'"'+(t[0]===active?' aria-current="page"':'')+'>'+I[t[2]]+'<span>'+t[1]+'</span></a>';}).join('')+'</nav>';
 }
+var SECTIONS=[['proof','Результаты'],['how','Как это работает'],['price','Стоимость'],['faq','Вопросы']];
+function secLink(x){return '<a href="#/?s='+x[0]+'" data-action="jump" data-target="'+x[0]+'">'+x[1]+'</a>';}
+function burger(){return '<button type="button" class="icon-btn mob-only" id="menuBtn" aria-label="Меню" aria-expanded="false" aria-controls="menu" data-action="menu">'+I.menu+'</button>';}
+function menu(){
+  var docs=[['terms','Пользовательское соглашение'],['offer','Оферта'],['privacy','Политика обработки ПДн'],['cookies','Политика cookie']];
+  return '<div class="menu" id="menu" hidden><nav aria-label="Меню">'+
+    '<div class="sec">'+SECTIONS.map(secLink).join('')+'</div>'+
+    '<h3>Сервис</h3><div class="sub"><a href="#/about">О нас и реквизиты</a><a href="#/doc/guide">Как подать жалобу</a>'+(S.user?'<a href="#/referral">Пригласить друзей</a>':'')+'<button type="button" data-action="demo">Демо-настройки</button></div>'+
+    '<h3>Документы</h3><div class="sub">'+docs.map(function(d){return '<a href="#/doc/'+d[0]+'">'+d[1]+'</a>';}).join('')+'</div>'+
+    '<div class="acts">'+(current.view==='home'?'<label class="btn" for="file">'+I.upload+'Проверить постановление</label>':'<a class="btn" href="#/">'+I.upload+'Проверить постановление</a>')+
+    (S.user?'':'<a class="btn outline" href="#/login?next=/history">Войти</a>')+'</div></nav></div>';
+}
+function menuOpen(){var m=document.getElementById('menu');return !!(m&&!m.hidden);}
+function setMenu(open,restoreFocus){var m=document.getElementById('menu'),b=document.getElementById('menuBtn');if(!m||!b)return;
+  m.hidden=!open;b.setAttribute('aria-expanded',open?'true':'false');b.setAttribute('aria-label',open?'Закрыть меню':'Меню');b.innerHTML=open?I.close:I.menu;
+  document.documentElement.classList.toggle('menu-open',open);
+  if(open){var f=m.querySelector('a,button');if(f)f.focus();}else if(restoreFocus)b.focus();}
 function kvDecree(d){
   return '<dl class="kv"><dt>Номер</dt><dd>'+esc(d.number)+'</dd><dt>Вынесено</dt><dd>'+esc(d.issued)+'</dd><dt>Статья</dt><dd>'+esc(d.art)+'</dd><dt>Место</dt><dd>'+esc(d.place||'[адрес камеры]')+'</dd><dt>Штраф</dt><dd><b>'+rub(d.sum)+'</b></dd></dl>';
 }
@@ -629,7 +666,7 @@ function vLanding(){
   '<section class="band"><div><h2 class="h2">Проверьте шансы по своему постановлению</h2><p style="margin-top:8px">Без регистрации. Регистрация понадобится, только если решите обжаловать.</p></div>'+
     '<div class="stack" style="gap:8px">'+uploadBtn('file2')+'</div></section>'+
   '</div></main>'+footer()+
-  '<div class="land-cta" id="landCta" aria-hidden="true"><label class="btn" for="file">'+I.upload+'Проверить шансы</label><p class="tiny muted">Бесплатно и без регистрации</p></div>';
+  '<div class="land-cta'+(S.user?' over-tabs':'')+'" id="landCta" aria-hidden="true"><label class="btn" for="file">'+I.upload+'Проверить шансы</label>'+(S.user?'':'<p class="tiny muted">Бесплатно и без регистрации</p>')+'</div>'+tabbar('');
 }
 /* Соцдоказательства. В квадратных скобках — заглушки: до запуска заменить реальными цифрами из базы дел.
    Строки реестра — пример формата (обезличенные решения, публичные данные сайтов судов).
@@ -728,7 +765,7 @@ function initLanding(){
   ui.io=io;
 }
 function footer(){
-  return '<footer class="site"><div class="foot-cols">'+
+  return '<footer class="site'+(S.user?' has-tabs':'')+'"><div class="foot-cols">'+
     '<div><p class="logo" role="img" aria-label="Оспорим">'+LOGO_SVG+'</p><p class="small muted" style="margin-top:8px;max-width:30em">Готовим жалобы в суд на постановления с камер автофиксации. Услуга оказывается в форме юридической консультации по <a href="#/doc/offer">оферте</a>.</p>'+
       '<p class="tiny muted" style="margin-top:12px">[Юрлицо] · ИНН [ИНН] · ОГРН [ОГРН]<br>Оператор ПДн, рег. № [номер] в реестре РКН</p></div>'+
     '<div><h3>Сервис</h3><div class="stack"><a class="link plain" href="#/about">О нас и реквизиты</a><a class="link plain" href="#/doc/guide">Как подать жалобу</a>'+(S.user?'<a class="link plain" href="#/referral">Пригласить друзей</a>':'')+'<button type="button" class="link plain" data-action="demo">Демо-настройки</button></div></div>'+
@@ -1026,7 +1063,7 @@ function vReferral(){
 function vAbout(){
   var lawyer='<div style="display:flex;gap:14px;align-items:center;padding:14px;background:var(--sheet);border-radius:6px"><div style="width:64px;height:64px;flex-shrink:0;border-radius:4px;background:var(--disabled);display:grid;place-items:center;font-size:12px" class="muted">Фото</div><div><b>[ФИО юриста]</b><p class="small muted" style="margin-top:2px">[Специализация, стаж]</p></div></div>';
   var head=S.user?hdrCab('about'):hdrBack('На главную','#/');
-  return head+'<main id="main" class="wide'+(S.user?' has-tabs':'')+'" style="padding-top:8px;padding-bottom:48px"><div class="split main-first"><div class="col-main">'+
+  return head+'<main id="main" class="wide'+(S.user?' has-tabs':'')+'" style="padding-top:8px'+(S.user?'':';padding-bottom:48px')+'"><div class="split main-first"><div class="col-main">'+
     '<h1 class="title">О нас</h1><p class="lead">Готовим жалобы в суд на постановления с камер автофиксации. Шаблоны жалоб написали и проверили практикующие юристы.</p>'+
     '<section class="block"><h2 class="h3">Юристы</h2><div class="lawyers">'+lawyer+lawyer+'</div></section>'+
     '<section class="block"><h2 class="h3">Как мы работаем</h2>'+numList(['Оцениваем шансы по фабуле дела и актуальной судебной практике. При низких шансах жалобу не готовим.','Собираем жалобу из шаблонов, которые составили и проверили юристы. Каждую жалобу с нуля юрист не пишет.','Жалобу подаёте вы, от своего имени. Мы консультируем и отслеживаем дело, но не представляем вас в суде.'])+'</section>'+
@@ -1036,7 +1073,7 @@ function vAbout(){
     '</div></section></div>'+
     '<aside class="col-side"><section class="sheet pad" style="margin-top:28px"><h2 class="h3">Реквизиты</h2><dl class="kv" style="grid-template-columns:104px minmax(0,1fr)">'+
     '<dt>Компания</dt><dd>[Наименование юрлица]</dd><dt>ИНН</dt><dd>[ИНН]</dd><dt>ОГРН</dt><dd>[ОГРН]</dd><dt>Адрес</dt><dd>[Юридический адрес]</dd>'+
-    '<dt>Почта</dt><dd><a href="mailto:hello@example.ru">[почта]</a></dd><dt>Оператор ПДн</dt><dd>Рег. № в реестре РКН [номер]</dd></dl></section></aside></div></main>'+(S.user?tabbar('about'):'');
+    '<dt>Почта</dt><dd><a href="mailto:hello@example.ru">[почта]</a></dd><dt>Оператор ПДн</dt><dd>Рег. № в реестре РКН [номер]</dd></dl></section></aside></div></main>'+tabbar('about');
 }
 
 var DOCS={terms:'Пользовательское соглашение',offer:'Оферта',privacy:'Политика обработки персональных данных',consent:'Согласие на обработку персональных данных',cookies:'Политика cookie',guide:'Как подать жалобу через ГАС «Правосудие»'};
@@ -1058,6 +1095,8 @@ function docText(kind,c){
 /* ---------- dialogs ---------- */
 function openDialog(html){dlg.innerHTML=html;if(!dlg.open)dlg.showModal();var f=dlg.querySelector('[autofocus]');if(f)f.focus();}
 function dlgHead(t){return '<div class="dlg-head"><h2 class="h2" id="dlg-title">'+t+'</h2><button type="button" class="icon-btn" aria-label="Закрыть" data-action="close">'+I.close+'</button></div>';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&menuOpen())setMenu(false,true);});
+matchMedia('(min-width:900px)').addEventListener('change',function(e){if(e.matches&&menuOpen())setMenu(false);});
 dlg.addEventListener('click',function(e){if(e.target===dlg)dlg.close();});
 function demoDialog(){
   var opt=function(v,l){return '<label class="opt'+(S.scenario===v?' sel':'')+'"><input type="radio" name="sc" value="'+v+'" data-change="scenario"'+(S.scenario===v?' checked':'')+'><span><b>'+l+'</b></span></label>';};
@@ -1102,6 +1141,7 @@ var actions={
   cookie:function(){S.cookie=true;save();var el=document.querySelector('.cookie');if(el)el.remove();},
   sample:function(){startUpload('Пример постановления.pdf',true);},
   demo:demoDialog,
+  menu:function(){setMenu(!menuOpen(),true);},
   close:function(){dlg.close();},
   back:function(){if(history.length>1)history.back();else go('/');},
   edit:function(){
@@ -1151,7 +1191,9 @@ var actions={
     '<button type="button" class="btn" data-action="reset">Удалить всё</button><button type="button" class="btn outline sm" data-action="close" autofocus>Оставить аккаунт</button></div>');}
 };
 
-document.addEventListener('click',function(e){var el=e.target.closest('[data-action]');if(!el)return;var fn=actions[el.dataset.action];if(fn){e.preventDefault();fn(el);}});
+document.addEventListener('click',function(e){
+  if(menuOpen()&&e.target.closest('#menu a,#menu label,#menu [data-action]'))setMenu(false);
+  var el=e.target.closest('[data-action]');if(!el)return;var fn=actions[el.dataset.action];if(fn){e.preventDefault();fn(el);}});
 document.addEventListener('change',function(e){var el=e.target;var k=el.dataset&&el.dataset.change;if(!k)return;
   if(k==='file'){var f=el.files&&el.files[0];if(!f)return;ui.retry=current.view==='guide';var okType=/pdf|image/.test(f.type)||/\.(pdf|jpe?g|png|heic|webp)$/i.test(f.name);
     if(!okType){S.draft=mockDecree(f.name);save();go('/guide');return;}startUpload(f.name,false);}
@@ -1198,10 +1240,10 @@ function build(){
   else if(v==='doc')html=vDoc(current.arg);
   return html;
 }
-function rerender(){var y=window.scrollY;var html=build();if(html==null){go('/');return;}$app.innerHTML=html+cookieBar();window.scrollTo(0,y);}
+function rerender(){var y=window.scrollY;document.documentElement.classList.remove('menu-open');var html=build();if(html==null){go('/');return;}$app.innerHTML=html+cookieBar();window.scrollTo(0,y);}
 var TITLES={home:'Обжалование штрафов с камер',analyzing:'Проверяем постановление',result:'Шансы на отмену',guide:'Файл не распознан',login:'Вход',checkout:'Последний шаг',case:'Дело',history:'Мои дела',profile:'Профиль',referral:'Пригласить друзей',about:'О нас',doc:'Документ'};
 function route(){
-  clearTimers();if(dlg.open)dlg.close();if(ui.io){ui.io.disconnect();ui.io=null;}
+  clearTimers();if(dlg.open)dlg.close();document.documentElement.classList.remove('menu-open');if(ui.io){ui.io.disconnect();ui.io=null;}
   var h=location.hash.slice(1)||'/';var qi=h.indexOf('?');var path=qi>=0?h.slice(0,qi):h;var q=new URLSearchParams(qi>=0?h.slice(qi+1):'');
   var parts=path.split('/').filter(Boolean);var view=parts[0]||'home';var arg=parts[1]||null;
   var needAuth={checkout:1,case:1,history:1,profile:1,referral:1};
