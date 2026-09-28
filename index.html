@@ -449,7 +449,7 @@ dialog::backdrop{background:var(--backdrop)}
 <script>
 (function(){
 'use strict';
-var TODAY='25.09.2026';
+var TODAY=fmtD(new Date());
 var KEY='fines-demo-v1';
 var $app=document.getElementById('app');
 var dlg=document.getElementById('dlg');
@@ -469,8 +469,8 @@ function discountOn(d){return daysTo(d.discountUntil)>=0;}
 function missed(d){return daysTo(d.deadline)<0;}
 function pts(n){return fmt(n)+'\u00A0'+plural(n,'балл','балла','баллов');}
 
-function fresh(){return {v:1,scenario:'high',user:null,balance:0,freeCredits:0,cases:[],ops:[],ref:{invited:[],earned:0},cookie:false,notify:{court:true,deadlines:true},draft:null};}
-function load(){try{var r=localStorage.getItem(KEY);if(r){var s=JSON.parse(r);if(s&&s.v===1)return s;}}catch(e){}return fresh();}
+function fresh(){return {v:1,aiv:1,scenario:'ai',user:null,balance:0,freeCredits:0,cases:[],ops:[],ref:{invited:[],earned:0},cookie:false,notify:{court:true,deadlines:true},draft:null};}
+function load(){try{var r=localStorage.getItem(KEY);if(r){var s=JSON.parse(r);if(s&&s.v===1){if(s.aiv!==1){s.aiv=1;s.scenario='ai';}return s;}}}catch(e){}return fresh();}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 var S=load();
 var ui={loginStep:'phone',phone:'',consent:false,code:'',resend:45,strategy:'pay',calc:{sum:3000,first:'1',pay:'1'}};
@@ -510,6 +510,54 @@ function mockDecree(file,sample){
 }
 /* Срок обжалования: 10 дней (считаем от даты вынесения, пока не знаем дату получения). Скидка 50%: 20 дней с даты вынесения. */
 function withTerms(d){d.deadline=addDays(d.issued,10);d.discountUntil=addDays(d.issued,20);return d;
+}
+
+/* ---------- AI: распознавание постановления через /api/analyze (Gemini) ---------- */
+var ai={p:null};
+var AI_ERR={too_big:'Файл больше 4 МБ. Загрузите PDF с Госуслуг или фото поменьше.',quota:'Сервис распознавания перегружен. Попробуйте через минуту.',no_key:'Распознавание не настроено: нет ключа Gemini на сервере.',net:'Нет связи с сервером. Проверьте интернет и попробуйте ещё раз.'};
+function readB64(blob){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(String(r.result).split(',')[1]);};r.onerror=rej;r.readAsDataURL(blob);});}
+/* Фото уменьшаем до 2000 px по длинной стороне: так укладываемся в лимит запроса и быстрее отвечает модель. */
+function shrink(f){
+  if(!/^image\/(jpeg|png|webp)$/.test(f.type)||f.size<1.5e6)return Promise.resolve(f);
+  return new Promise(function(res){
+    var img=new Image(),url=URL.createObjectURL(f);
+    img.onload=function(){var k=Math.min(1,2000/Math.max(img.width,img.height)),c=document.createElement('canvas');
+      c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      URL.revokeObjectURL(url);c.toBlob(function(b){res(b||f);},'image/jpeg',.85);};
+    img.onerror=function(){URL.revokeObjectURL(url);res(f);};
+    img.src=url;
+  });
+}
+function mimeOf(f){if(f.type)return f.type;var m=/\.(\w+)$/.exec(f.name.toLowerCase());return {pdf:'application/pdf',jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp',heic:'image/heic'}[m&&m[1]]||'';}
+function aiAnalyze(f){
+  return shrink(f).then(function(b){
+    if(b.size>4e6)throw {code:'too_big'};
+    return readB64(b).then(function(data){
+      return fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mime:b===f?mimeOf(f):'image/jpeg',data:data})})
+        .catch(function(){throw {code:'net'};});
+    });
+  }).then(function(r){return r.json().catch(function(){return {};}).then(function(j){if(!r.ok)throw {code:j.error||'upstream'};return j;});});
+}
+function normNum(v){return String(v||'').replace(/\D/g,'');}
+/* Шансы считаем правилами по признакам, которые извлекла модель. Модель вердикт не выносит. */
+function assess(x){
+  var r=[];
+  if(x.photo_present===false)r.push('В постановлении нет фотоматериалов, которые подтверждают нарушение.');
+  if(x.plate_readable===false)r.push('Госномер на фото читается неоднозначно: нельзя точно установить, что это ваша машина.');
+  if(x.sign_visible===false)r.push('Знак или разметка, из-за которых выписан штраф, не видны на фото.');
+  if(!x.camera_name&&!x.camera_serial)r.push('Не указаны название и заводской номер комплекса фотофиксации.');
+  var vu=x.camera_verification_until,vd=x.violation_date||x.issued;
+  if(vu&&/^\d{2}\.\d{2}\.\d{4}$/.test(vu)&&vd&&/^\d{2}\.\d{2}\.\d{4}$/.test(vd)&&parseD(vu)<parseD(vd))r.push('Срок поверки комплекса истёк '+vu+', до даты нарушения.');
+  if(!x.place)r.push('Не указано точное место нарушения.');
+  if(x.speed_fact&&x.speed_limit){var ex=x.speed_fact-x.speed_limit;[20,40,60,80].forEach(function(t){if(ex>t&&ex-t<=2)r.push('Скорость превышена на '+ex+' км/ч, это всего на '+(ex-t)+' км/ч больше порога '+t+' км/ч и в пределах погрешности измерения.');});}
+  if(!r.length)return {level:'low',pct:18,reasons:['Все обязательные сведения в постановлении указаны.','На фотоматериалах нет явных недостатков, на которые обычно ссылаются суды.']};
+  return {level:'high',pct:Math.min(85,50+12*r.length),reasons:r};
+}
+function draftFromAI(x,file){
+  var number=normNum(x.number),issued=x.issued;
+  if(!x.is_decree||x.quality==='low'||!number||!validD(issued||'')||!x.art||!(x.sum>0))return null;
+  var d=withTerms({number:number,issued:issued,art:x.art,sum:Math.round(x.sum),place:x.place||'',court:'[Районный суд по месту камеры]',file:file});
+  d.verdict=assess(x);d.ai=true;return d;
 }
 function seed(){
   S.user=S.user||{phone:'+7 (900) 000-00-00',name:'',email:''};
@@ -789,7 +837,21 @@ function runAnalyzing(){
   function tick(){
     if(i>0){var p=document.getElementById('st'+(i-1));if(p){p.className='done';p.querySelector('.ic').innerHTML=I.check;}}
     if(i<STEPS.length){var c=document.getElementById('st'+i);if(c)c.className='active';var l=document.getElementById('stlive');if(l)l.textContent=STEPS[i];i++;later(tick,850);}
+    else if(S.draft.pending)finishAI();
     else later(function(){go(S.scenario==='error'&&!ui.retry?'/guide':'/result');},350);
+  }
+  function finishAI(){
+    var c=document.getElementById('st'+(STEPS.length-1));if(c)c.className='active';
+    var name=S.draft.file,p=ai.p;
+    if(!p){go('/');return;}
+    p.then(function(o){if(o.x)o.d=draftFromAI(o.x,name);
+      if(ai.p!==p||current.view!=='analyzing')return;
+      ai.p=null;
+      if(o.d){S.draft=o.d;save();go('/result');return;}
+      S.draft={file:name};save();
+      if(o.err&&o.err!=='parse'&&o.err!=='upstream'){toast(AI_ERR[o.err]||'Не удалось проверить постановление. Попробуйте ещё раз.');go(o.err==='too_big'?'/guide':'/');return;}
+      go('/guide');
+    });
   }
   tick();
 }
@@ -801,8 +863,9 @@ function priceHint(){
   return 'От '+rub(Math.min(p.fee,w.fee))+'. Не отменят: вернём баллами';
 }
 function vResult(){
-  var d=S.draft;if(!d)return null;
-  var low=S.scenario==='low'&&!ui.retry;
+  var d=S.draft;if(!d||!d.number)return null;
+  var V=d.verdict,low=V?V.level==='low':S.scenario==='low'&&!ui.retry;
+  var note=V?'Предварительная оценка по данным постановления. Это прогноз, а не гарантия.':'Оценка по фабуле дела и актуальной судебной практике. Это прогноз, а не гарантия.';
   var disc=discountOn(d);
   var mini=kvMini(d);
   var recog='<p class="small muted" style="display:flex;align-items:center;gap:8px;min-height:32px">'+I.check+'Постановление распознано</p>';
@@ -815,9 +878,9 @@ function vResult(){
       '<p class="muted" style="margin-top:4px;font-size:15px">Срок скидки 50% истёк '+d.discountUntil+'. Штраф нужно оплатить в течение 60 дней после вступления постановления в силу, иначе грозит двойной штраф.</p>';
     return hdrBack('Назад','#/')+'<main id="main" class="wide" style="padding-bottom:48px"><div class="split main-first">'+
       '<div class="col-main">'+recog+'<div style="margin-top:8px">'+mini+'</div>'+
-      '<section class="block"><p class="small muted">Шансы на отмену</p><div class="verdict"><h1 class="big" style="margin:0">Низкие</h1><span class="pct">18%</span></div>'+segs(18)+
-      '<p class="tiny muted" style="margin-top:10px">Оценка по фабуле дела и актуальной судебной практике. Это прогноз, а не гарантия.</p></section>'+
-      '<section class="block"><h2 class="h3">Почему шансы низкие</h2>'+numList(REASONS.low)+
+      '<section class="block"><p class="small muted">Шансы на отмену</p><div class="verdict"><h1 class="big" style="margin:0">Низкие</h1><span class="pct">'+(V?V.pct:18)+'%</span></div>'+segs(V?V.pct:18)+
+      '<p class="tiny muted" style="margin-top:10px">'+note+'</p></section>'+
+      '<section class="block"><h2 class="h3">Почему шансы низкие</h2>'+numList(V?V.reasons:REASONS.low)+
       '<p style="margin-top:20px;font-size:15px">Мы не будем готовить жалобу: скорее всего, вы потеряете время'+(disc?' и скидку на оплату':'')+'. Денег за проверку не берём.</p></section></div>'+
       '<aside class="col-side"><section class="sheet" style="margin-top:28px;padding:20px">'+pay+
       '<a class="btn" style="margin-top:18px" href="https://www.gosuslugi.ru" target="_blank" rel="noopener">Оплатить на Госуслугах</a></section>'+
@@ -835,9 +898,9 @@ function vResult(){
       '<div style="margin-top:12px">'+deadline+discNote+'</div>'+
       '<div class="side-card desk-only">'+cta+'<p class="small muted center">'+priceHint()+'</p></div></aside>'+
     '<div class="col-main"><div class="desk-only">'+recog+'</div>'+
-    '<section class="block"><p class="small muted">Шансы на отмену</p><div class="verdict"><h1 class="big" style="margin:0">Высокие</h1><span class="pct">72%</span></div>'+segs(72)+
-    '<p class="tiny muted" style="margin-top:10px">Оценка по фабуле дела и актуальной судебной практике. Это прогноз, а не гарантия.</p></section>'+
-    '<section class="block"><h2 class="h3">Почему шансы высокие</h2>'+numList(REASONS.high)+'</section>'+
+    '<section class="block"><p class="small muted">Шансы на отмену</p><div class="verdict"><h1 class="big" style="margin:0">Высокие</h1><span class="pct">'+(V?V.pct:72)+'%</span></div>'+segs(V?V.pct:72)+
+    '<p class="tiny muted" style="margin-top:10px">'+note+'</p></section>'+
+    '<section class="block"><h2 class="h3">Почему шансы высокие</h2>'+numList(V?V.reasons:REASONS.high)+'</section>'+
     '<section class="boxed" style="margin-top:26px"><b>Рекомендация: обжаловать</b><p class="muted" style="margin-top:6px;font-size:15px">Подготовим жалобу под вашу ситуацию. Что делать со штрафом, оплатить сейчас или ждать суда, решите на следующем шаге.</p></section>'+
     '<section class="block"><h2 class="h3">Что будет дальше</h2>'+numList(['Войдёте по номеру телефона, чтобы сохранить дело.','Выберете, что делать со штрафом, и получите пакет документов'+(late?' с ходатайством о восстановлении срока':'')+'.','Подадите жалобу через ГАС «Правосудие». Мы будем следить за делом и пришлём решение суда.'])+'</section>'+
     '</div></div></main><div class="cta-bar"><div class="inner">'+cta+'<p class="small muted center">'+priceHint()+'</p></div></div>';
@@ -1106,7 +1169,7 @@ function demoDialog(){
   var opt=function(v,l){return '<label class="opt'+(S.scenario===v?' sel':'')+'"><input type="radio" name="sc" value="'+v+'" data-change="scenario"'+(S.scenario===v?' checked':'')+'><span><b>'+l+'</b></span></label>';};
   openDialog('<div class="dlg">'+dlgHead('Демо-настройки')+
     '<fieldset style="margin:0;padding:0;border:0" class="stack"><legend class="h3" style="padding:0">Результат проверки постановления</legend><div class="stack" style="gap:8px">'+
-    opt('high','Высокие шансы')+opt('low','Низкие шансы')+opt('error','Файл не распознан')+'</div></fieldset>'+
+    opt('ai','Реальная проверка (ИИ)')+opt('high','Высокие шансы')+opt('low','Низкие шансы')+opt('error','Файл не распознан')+'</div></fieldset>'+
     '<button type="button" class="btn outline sm" data-action="seed">Загрузить демо-историю дел</button>'+
     '<button type="button" class="btn outline sm" data-action="reset">Сбросить всё и начать заново</button>'+
     '<p class="small muted">Демо-данные хранятся только в этом браузере.</p></div>');
@@ -1133,7 +1196,10 @@ function jumpTo(id,smooth){
 /* ---------- actions ---------- */
 function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.remove('show');},2600);}
 function go(h){if(location.hash==='#'+h)route();else location.hash=h;}
-function startUpload(name,sample){if(sample)ui.retry=false;ui.strategy='pay';S.draft=mockDecree(name,sample);save();go('/analyzing');}
+function startUpload(name,sample,f){if(sample)ui.retry=false;ui.strategy='pay';ai.p=null;
+  if(f&&S.scenario==='ai'){S.draft={file:name,pending:true};ai.p=aiAnalyze(f).then(function(x){return {x:x};},function(e){return {err:e&&e.code||'upstream'};});}
+  else S.draft=mockDecree(name,sample);
+  save();go('/analyzing');}
 function createCase(p){
   var d=S.draft;var id='c'+Date.now().toString(36);
   var c={id:id,number:d.number,art:d.art,sum:d.sum,issued:d.issued,deadline:d.deadline,discountUntil:d.discountUntil,court:d.court,place:d.place,status:'ready',strategy:ui.strategy,free:p.free,fee:p.free?0:p.fee,paidPoints:p.free?0:p.pts,paidCard:p.free?0:p.toPay,restore:missed(d),hearing:null,events:[{date:TODAY,text:'Жалоба подготовлена'}]};
@@ -1200,7 +1266,7 @@ document.addEventListener('click',function(e){
   var el=e.target.closest('[data-action]');if(!el)return;var fn=actions[el.dataset.action];if(fn){e.preventDefault();fn(el);}});
 document.addEventListener('change',function(e){var el=e.target;var k=el.dataset&&el.dataset.change;if(!k)return;
   if(k==='file'){var f=el.files&&el.files[0];if(!f)return;ui.retry=current.view==='guide';var okType=/pdf|image/.test(f.type)||/\.(pdf|jpe?g|png|heic|webp)$/i.test(f.name);
-    if(!okType){S.draft=mockDecree(f.name);save();go('/guide');return;}startUpload(f.name,false);}
+    if(!okType){S.draft=mockDecree(f.name);save();go('/guide');return;}startUpload(f.name,false,f);}
   else if(k==='calc'){var m={csum:'sum',cpay:'pay',cfirst:'first'}[el.name];ui.calc[m]=m==='sum'?+el.value:el.value;document.getElementById('calcOut').innerHTML=calcOut();}
   else if(k==='consent'){ui.consent=el.checked;updatePhoneBtn();}
   else if(k==='strategy'){ui.strategy=el.value;rerender();var r=document.querySelector('input[name="strategy"][value="'+ui.strategy+'"]');if(r)r.focus();}
