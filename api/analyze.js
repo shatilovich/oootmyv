@@ -1,7 +1,8 @@
 // Vercel Function: распознаёт постановление через Gemini и возвращает поля в JSON.
 // Ключи хранятся в переменных окружения (Vercel → Project → Settings → Environment Variables):
 // GEMINI_API_KEY — основной провайдер; OPENROUTER_API_KEY — необязательный запасной (бесплатные модели OpenRouter),
-// на него уходим, если Gemini перегружен.
+// на него уходим, если Gemini перегружен. OPENROUTER_MODEL — конкретные модели через запятую,
+// AI_PRIMARY=openrouter — ходить в OpenRouter первым.
 
 export const config = { maxDuration: 60 };
 
@@ -16,6 +17,8 @@ const DEADLINE = 55_000; // запас до maxDuration
 const GEMINI_BUDGET = 25_000; // сколько отдаём Gemini, если есть запасной провайдер
 const OR_API = 'https://openrouter.ai/api/v1';
 const OR_MODELS = (process.env.OPENROUTER_MODEL || '').split(',').map((s) => s.trim()).filter(Boolean);
+// AI_PRIMARY=openrouter — сначала OpenRouter, Gemini остаётся запасным.
+const OR_FIRST = process.env.AI_PRIMARY === 'openrouter';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const MAX_BYTES = 4 * 1024 * 1024; // лимит тела запроса у Vercel Functions ~4.5 МБ
 const MIME = /^(application\/pdf|image\/(jpeg|png|webp|heic|heif))$/;
@@ -87,27 +90,35 @@ async function fallbacks(key) {
   return discovered;
 }
 
-// Бесплатные модели OpenRouter, которые понимают картинки. Сначала те, что умеют отвечать по JSON-схеме.
+// Модели OpenRouter: из OPENROUTER_MODEL (через запятую) или бесплатные, которые понимают картинки.
+// Возможности (ответ по JSON-схеме) берём из каталога OpenRouter; кэшируется на время жизни инстанса.
 let orDiscovered;
 async function orModels() {
-  if (OR_MODELS.length) return OR_MODELS.map((id) => ({ id, structured: true }));
   if (orDiscovered) return orDiscovered;
+  let data = [];
   try {
     const r = await fetch(`${OR_API}/models`, { signal: AbortSignal.timeout(5000) });
-    const { data = [] } = await r.json();
-    orDiscovered = data
-      .filter((m) => m.id.endsWith(':free') && m.architecture?.input_modalities?.includes('image'))
-      .map((m) => ({
-        id: m.id,
-        structured: !!m.supported_parameters?.includes('structured_outputs'),
-        ctx: m.context_length || 0,
-      }))
-      .sort((a, b) => b.structured - a.structured || b.ctx - a.ctx)
-      .slice(0, 4);
+    ({ data = [] } = await r.json());
   } catch (e) {
     console.warn('OpenRouter: list models failed', String(e));
-    return [];
   }
+  const info = (m) => ({
+    id: m.id,
+    structured: !!m.supported_parameters?.includes('structured_outputs'),
+    ctx: m.context_length || 0,
+  });
+  if (OR_MODELS.length) {
+    const byId = new Map(data.map((m) => [m.id, m]));
+    const list = OR_MODELS.map((id) => (byId.has(id) ? info(byId.get(id)) : { id, structured: false }));
+    if (data.length) orDiscovered = list;
+    return list;
+  }
+  if (!data.length) return [];
+  orDiscovered = data
+    .filter((m) => m.id.endsWith(':free') && m.architecture?.input_modalities?.includes('image'))
+    .map(info)
+    .sort((a, b) => b.structured - a.structured || b.ctx - a.ctx)
+    .slice(0, 4);
   return orDiscovered;
 }
 
@@ -266,9 +277,13 @@ export default async function handler(req, res) {
   if (data.length * 0.75 > MAX_BYTES) return res.status(413).json({ error: 'too_big' });
 
   const started = Date.now();
-  const g = key ? await gemini(key, mime, data, orKey ? GEMINI_BUDGET : DEADLINE) : { status: 503, error: 'busy' };
+  if (orKey && OR_FIRST) {
+    const o = await openrouter(orKey, mime, data, started + (key ? DEADLINE - 15_000 : DEADLINE));
+    if (o) return res.status(200).json(o.data);
+  }
+  const g = key ? await gemini(key, mime, data, orKey && !OR_FIRST ? GEMINI_BUDGET : DEADLINE - (Date.now() - started)) : { status: 503, error: 'busy' };
   if (g.data) return res.status(200).json(g.data);
-  if (orKey) {
+  if (orKey && !OR_FIRST) {
     const o = await openrouter(orKey, mime, data, started + DEADLINE);
     if (o) return res.status(200).json(o.data);
   }
