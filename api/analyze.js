@@ -3,7 +3,7 @@
 
 export const config = { maxDuration: 60 };
 
-const MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+const MODEL = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
 const MAX_BYTES = 4 * 1024 * 1024; // лимит тела запроса у Vercel Functions ~4.5 МБ
 const MIME = /^(application\/pdf|image\/(jpeg|png|webp|heic|heif))$/;
 
