@@ -218,6 +218,7 @@ footer.site.has-tabs{padding-bottom:calc(190px + env(safe-area-inset-bottom,0px)
 .menu a:hover,.menu .sub button:hover{color:var(--accent)}
 .menu .acts{display:flex;flex-direction:column;gap:10px;margin-top:28px}
 html.menu-open{overflow:hidden}
+#app:has(> .cookie){padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
 
 /* cookie, toast, dialog */
 .cookie{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:40;max-width:560px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:14px 14px 14px 16px;background:var(--btn-bg);color:var(--btn-fg);border-radius:10px;box-shadow:0 10px 30px -10px var(--shadow)}
@@ -410,6 +411,7 @@ dialog::backdrop{background:var(--backdrop)}
 .seal text{font:700 10.5px/1 system-ui,-apple-system,sans-serif;letter-spacing:.18em;fill:currentColor}
 .seal .c1{font-family:Spectral,Georgia,serif;font-size:26px;letter-spacing:0}
 .seal .c2{font-size:9px;letter-spacing:.08em}
+.land{overflow-x:clip}
 .land-cta{position:fixed;left:0;right:0;bottom:0;z-index:15;padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));background:var(--ground);border-top:1px solid var(--line);transform:translateY(110%);transition:transform .25s ease}
 .land-cta.show{transform:none}
 .land-cta p{margin-top:6px;text-align:center}
@@ -577,6 +579,7 @@ function menuOpen(){var m=document.getElementById('menu');return !!(m&&!m.hidden
 function setMenu(open,restoreFocus){var m=document.getElementById('menu'),b=document.getElementById('menuBtn');if(!m||!b)return;
   m.hidden=!open;b.setAttribute('aria-expanded',open?'true':'false');b.setAttribute('aria-label',open?'Закрыть меню':'Меню');b.innerHTML=open?I.close:I.menu;
   document.documentElement.classList.toggle('menu-open',open);
+  $app.querySelectorAll(':scope > :not(.hdr):not(#menu)').forEach(function(e){e.inert=open;});
   if(open){var f=m.querySelector('a,button');if(f)f.focus();}else if(restoreFocus)b.focus();}
 function kvDecree(d){
   return '<dl class="kv"><dt>Номер</dt><dd>'+esc(d.number)+'</dd><dt>Вынесено</dt><dd>'+esc(d.issued)+'</dd><dt>Статья</dt><dd>'+esc(d.art)+'</dd><dt>Место</dt><dd>'+esc(d.place||'[адрес камеры]')+'</dd><dt>Штраф</dt><dd><b>'+rub(d.sum)+'</b></dd></dl>';
@@ -605,7 +608,7 @@ function vLanding(){
     ['Как вы обращаетесь с моими данными?','Персональные данные обрабатываются в России по 152-ФЗ. Постановление читает модель GigaChat; другие системы получают только обезличенные данные. Файлы храним [N] дней и удаляем автоматически.']
   ];
   return hdrLanding()+
-  '<main id="main"><div class="page">'+
+  '<main id="main" class="land"><div class="page">'+
   '<section class="hero">'+
     '<div class="hero-head"><h1 class="title">Отмените штраф с камеры через суд</h1>'+
     '<p class="lead">Загрузите постановление. Оценим шансы по судебной практике и подготовим жалобу по шаблонам юристов. Пока ни один штраф не отменён, это бесплатно.</p></div>'+
@@ -863,7 +866,7 @@ function vLogin(q){
   }else{
     body='<form class="stack" style="gap:16px;margin-top:28px" data-submit="code" data-next="'+esc(next)+'" novalidate>'+
       '<div class="field"><label for="code">Код из SMS</label><input id="code" class="input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="4" placeholder="0000" style="letter-spacing:.3em;font-size:22px" data-input="code">'+
-      '<p class="small muted">Отправили на '+esc(ui.phone)+'. <button type="button" class="link small" style="min-height:0" data-action="changePhone">Изменить номер</button></p>'+
+      '<p class="small muted">Отправили на '+esc(ui.phone)+'.</p><button type="button" class="link small" style="align-self:flex-start;margin-top:-10px" data-action="changePhone">Изменить номер</button>'+
       '<p class="small muted">Демо: подойдёт любой код из 4 цифр.</p></div>'+
       '<button class="btn" id="codeBtn" type="submit" disabled>Подтвердить</button>'+
       '<p class="small muted center" id="resend">'+resendText()+'</p></form>';
@@ -936,7 +939,8 @@ function caseFacts(c){
   return '<dl class="kv" style="grid-template-columns:104px minmax(0,1fr)"><dt>Номер</dt><dd>'+esc(c.number)+'</dd><dt>Вынесено</dt><dd>'+esc(c.issued)+'</dd><dt>Статья</dt><dd>'+esc(c.art)+'</dd><dt>Штраф</dt><dd><b>'+rub(c.sum)+'</b></dd><dt>Суд</dt><dd>'+esc(c.court)+'</dd><dt>Со штрафом</dt><dd>'+strat+'</dd><dt>Обжалование</dt><dd>'+pay+'</dd></dl>';
 }
 function fineNote(c){
-  if(c.status==='cancelled'||c.status==='upheld')return '';
+  if(c.status==='cancelled')return '';
+  if(c.status==='upheld')return c.strategy==='pay'?'':'<div class="side-card"><b>Штраф нужно оплатить</b><p class="small muted">'+(daysTo(c.discountUntil)>=0?rub(c.sum/2)+' со скидкой до '+c.discountUntil+', '+left(c.discountUntil)+'.':rub(c.sum)+': срок скидки истёк '+c.discountUntil+'.')+' Оплатите в течение 60 дней после вступления постановления в силу, иначе грозит двойной штраф.</p><a class="link small" style="min-height:32px" href="https://www.gosuslugi.ru" target="_blank" rel="noopener">Оплатить на Госуслугах</a></div>';
   if(c.strategy==='pay'){
     return daysTo(c.discountUntil)>=0?'<div class="side-card"><b>Не забудьте оплатить штраф</b><p class="small muted">'+rub(c.sum/2)+' со скидкой до '+c.discountUntil+', '+left(c.discountUntil)+'. Если суд отменит постановление, деньги вернут.</p><a class="link small" style="min-height:32px" href="https://www.gosuslugi.ru" target="_blank" rel="noopener">Оплатить на Госуслугах</a></div>'
       :'<div class="side-card"><b>Не забудьте оплатить штраф</b><p class="small muted">'+rub(c.sum)+': срок скидки истёк '+c.discountUntil+'. Если суд отменит постановление, деньги вернут.</p><a class="link small" style="min-height:32px" href="https://www.gosuslugi.ru" target="_blank" rel="noopener">Оплатить на Госуслугах</a></div>';
@@ -994,9 +998,9 @@ function statusOf(c){
     case 'ready':return c.restore?{st:'Подайте скорее',hot:true,sub:rub(c.sum)+' · жалоба и ходатайство о восстановлении срока готовы'}:{st:'Подайте до '+c.deadline.slice(0,5),hot:true,sub:rub(c.sum)+' · жалоба готова, '+left(c.deadline)};
     case 'filed':return {st:'Подана',sub:rub(c.sum)+' · ищем дело на сайте суда'};
     case 'court':return {st:'В суде',sub:rub(c.sum)+' · заседание '+(c.hearingShort||'')};
-    case 'missed':return {st:'Срок пропущен',hot:true,sub:'Срок подачи истёк '+c.deadline.slice(0,5)+'.',act:'Подготовить ходатайство'};
+    case 'missed':return {st:'Срок пропущен',hot:true,sub:rub(c.sum)+' · срок подачи истёк '+c.deadline.slice(0,5),act:'Подготовить ходатайство'};
     case 'cancelled':return {stamp:true,sub:rub(c.sum)+' · решение '+c.decided};
-    case 'upheld':return {st:'Оставлено в силе',sub:c.fee?pts(c.fee)+' на счёте':'постановление в силе'};
+    case 'upheld':return {st:'Оставлено в силе',sub:c.fee?'вернули '+pts(c.fee)+' на счёт':'постановление в силе'};
   }
 }
 function caseCard(c){var s=statusOf(c);
@@ -1129,7 +1133,7 @@ function jumpTo(id,smooth){
 /* ---------- actions ---------- */
 function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.remove('show');},2600);}
 function go(h){if(location.hash==='#'+h)route();else location.hash=h;}
-function startUpload(name,sample){if(sample)ui.retry=false;S.draft=mockDecree(name,sample);save();go('/analyzing');}
+function startUpload(name,sample){if(sample)ui.retry=false;ui.strategy='pay';S.draft=mockDecree(name,sample);save();go('/analyzing');}
 function createCase(p){
   var d=S.draft;var id='c'+Date.now().toString(36);
   var c={id:id,number:d.number,art:d.art,sum:d.sum,issued:d.issued,deadline:d.deadline,discountUntil:d.discountUntil,court:d.court,place:d.place,status:'ready',strategy:ui.strategy,free:p.free,fee:p.free?0:p.fee,paidPoints:p.free?0:p.pts,paidCard:p.free?0:p.toPay,restore:missed(d),hearing:null,events:[{date:TODAY,text:'Жалоба подготовлена'}]};
