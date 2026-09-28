@@ -4,6 +4,10 @@
 export const config = { maxDuration: 60 };
 
 const MODEL = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
+// Необязательная запасная модель: на неё переключаемся, если основная перегружена.
+const FALLBACK = process.env.GEMINI_FALLBACK_MODEL;
+const BUSY = new Set([500, 503, 504]);
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const MAX_BYTES = 4 * 1024 * 1024; // лимит тела запроса у Vercel Functions ~4.5 МБ
 const MIME = /^(application\/pdf|image\/(jpeg|png|webp|heic|heif))$/;
 
@@ -58,24 +62,39 @@ export default async function handler(req, res) {
   if (!MIME.test(mime || '') || typeof data !== 'string') return res.status(400).json({ error: 'bad_file' });
   if (data.length * 0.75 > MAX_BYTES) return res.status(413).json({ error: 'too_big' });
 
-  let r;
-  try {
-    r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
+  const body = JSON.stringify({
+    contents: [{ parts: [{ inline_data: { mime_type: mime, data } }, { text: PROMPT }] }],
+    generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: SCHEMA },
+  });
+  const call = (model) =>
+    fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-      body: JSON.stringify({
-        contents: [{ parts: [{ inline_data: { mime_type: mime, data } }, { text: PROMPT }] }],
-        generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: SCHEMA },
-      }),
+      body,
     });
-  } catch (e) {
-    return res.status(502).json({ error: 'upstream' });
+
+  // Gemini периодически отвечает 503 «high demand»: повторяем с паузой, последняя попытка — на запасной модели.
+  const plan = [[MODEL, 0], [MODEL, 1500], [MODEL, 4000]];
+  if (FALLBACK) plan.push([FALLBACK, 0]);
+  let r;
+  for (const [model, wait] of plan) {
+    if (wait) await sleep(wait);
+    try {
+      r = await call(model);
+    } catch (e) {
+      r = null;
+      continue;
+    }
+    if (r.ok || !BUSY.has(r.status)) break;
+    console.warn('Gemini busy', model, r.status);
   }
+  if (!r) return res.status(502).json({ error: 'upstream' });
 
   if (!r.ok) {
     const detail = await r.text().catch(() => '');
     console.error('Gemini', r.status, detail.slice(0, 500));
-    return res.status(r.status === 429 ? 429 : 502).json({ error: r.status === 429 ? 'quota' : 'upstream' });
+    const error = r.status === 429 ? 'quota' : BUSY.has(r.status) ? 'busy' : 'upstream';
+    return res.status(error === 'upstream' ? 502 : r.status).json({ error });
   }
 
   const j = await r.json();
